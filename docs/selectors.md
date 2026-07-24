@@ -119,6 +119,15 @@ print(zones.points)   # [[(x0,y0), ...], [(x0,y0), ...], ...]
 
 `pixpick.multi_polygon()` uses the same interactive flow as the OpenCV polygon backend: draw a polygon, press Space to save it, draw another polygon, and press Enter to finish.
 
+# Multi-polygon results
+
+```python
+zones = pixpick.multi_polygon("frame.jpg")
+zones.polygons        # [Polygon(...), Polygon(...), ...]
+zones.points          # [[(x0,y0), ...], [(x0,y0), ...], ...]
+zones.as_numpy        # np.array shape (N, 2)      int32
+```
+
 ---
 
 ## Coming in future releases
