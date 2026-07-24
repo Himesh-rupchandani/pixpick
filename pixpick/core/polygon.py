@@ -219,6 +219,11 @@ class MultiPolygon:
         """List of (N, 2) int32 arrays, one per polygon."""
         return [polygon.as_numpy for polygon in self.polygons]
 
+    @property
+    def norm_numpy(self) -> list[np.ndarray]:
+        """List of (N, 2) float32 arrays, one per polygon."""
+        return [polygon.norm_numpy for polygon in self.polygons]
+
     def visualize(
         self,
         image: np.ndarray,
