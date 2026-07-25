@@ -56,7 +56,7 @@ class PolygonSelector:
 
         if len(polygons) == 1:
             # polygons is list[tuple[int, int]] coming straight from the backend
-            return Polygon(points=polygons, image_width=w, image_height=h)
+            return Polygon(points=polygons[0], image_width=w, image_height=h)
         else:
             return MultiPolygon(polygons=[Polygon(points=p, image_width=w, image_height=h) for p in polygons], image_width=w, image_height=h)
 
