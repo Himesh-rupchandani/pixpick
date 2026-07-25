@@ -49,13 +49,16 @@ class PolygonSelector:
         image = load_image(source, frame=frame)
         w, h  = image_size(image)
 
-        raw = self.backend.select_polygon(image, title=title)
+        polygons = self.backend.select_polygon(image, title=title)
 
-        if raw is None:
+        if polygons is None:
             raise SelectionCancelled("Polygon selection was cancelled by the user.")
 
-        # raw is list[tuple[int, int]] coming straight from the backend
-        return Polygon(points=raw, image_width=w, image_height=h)
+        if len(polygons) == 1:
+            # polygons is list[tuple[int, int]] coming straight from the backend
+            return Polygon(points=polygons, image_width=w, image_height=h)
+        else:
+            return MultiPolygon(polygons=[Polygon(points=p, image_width=w, image_height=h) for p in polygons], image_width=w, image_height=h)
 
 
 class MultiPolygonSelector:

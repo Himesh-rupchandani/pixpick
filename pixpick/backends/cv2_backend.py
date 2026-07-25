@@ -74,53 +74,11 @@ class CV2Backend(BaseBackend):
     def select_polygon(
         self,
         image: np.ndarray,
-        title: str = "pixpick | polygon | LMB=add RMB=undo Space/Enter=confirm Z=clear Esc=cancel",
-    ) -> list[tuple[int, int]] | None:
-
-        self._reset_state()
-        self._points = []
-        self._polygons = []
-        display_image = self._prepare_display_image(image)
-
-        cv2.namedWindow(title, cv2.WINDOW_AUTOSIZE)
-        cv2.setMouseCallback(title, self._polygon_callback)
-
-        while True:
-            canvas = self._draw_polygon(display_image)
-            cv2.imshow(title, canvas)
-
-            key = cv2.waitKey(20) & 0xFF
-
-            if key == 27:
-                cv2.destroyWindow(title)
-                return None
-
-            if key in (ord("z"), 8, 127):
-                self._points.clear()
-                continue
-
-            if key == 32:
-                if len(self._points) < 3:
-                    continue
-
-                self._polygons.append(self._points.copy())
-                self._points.clear()
-                continue
-
-            if key == 13:
-                if self._points:
-                    if len(self._points) < 3:
-                        continue
-
-                    polygon = self._points.copy()
-                    self._points.clear()
-                    cv2.destroyWindow(title)
-                    return [self._display_to_image_point(point) for point in polygon]
-
-    def select_multi_polygon(
-        self,
-        image: np.ndarray,
-        title: str = "pixpick | polygon | LMB=add RMB=undo Space=save polygon Enter=confirm all Z=clear Esc=cancel",
+        title: str = (
+            "pixpick | polygon | "
+            "LMB=add  RMB=undo  Space=new polygon  "
+            "Enter=confirm  Z=clear  Esc=cancel"
+        ),
     ) -> list[list[tuple[int, int]]] | None:
 
         self._reset_state()
