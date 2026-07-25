@@ -2,7 +2,7 @@ from __future__ import annotations
 import numpy as np
 from pixpick.backends.base import BaseBackend
 from pixpick.backends.cv2_backend import CV2Backend
-from pixpick.core.polygon import Polygon
+from pixpick.core.polygon import Polygon, MultiPolygon
 from pixpick.utils import load_image, image_size, ImageSource
 
 
@@ -49,13 +49,40 @@ class PolygonSelector:
         image = load_image(source, frame=frame)
         w, h  = image_size(image)
 
-        raw = self.backend.select_polygon(image, title=title)
+        polygons = self.backend.select_polygon(image, title=title)
 
-        if raw is None:
+        if polygons is None:
             raise SelectionCancelled("Polygon selection was cancelled by the user.")
 
-        # raw is list[tuple[int, int]] coming straight from the backend
-        return Polygon(points=raw, image_width=w, image_height=h)
+        if len(polygons) == 1:
+            # polygons is list[tuple[int, int]] coming straight from the backend
+            return Polygon(points=polygons[0], image_width=w, image_height=h)
+        else:
+            return MultiPolygon(polygons=[Polygon(points=p, image_width=w, image_height=h) for p in polygons], image_width=w, image_height=h)
+
+
+class MultiPolygonSelector:
+    """
+    Orchestrates: load image → open backend → capture multiple polygons → return MultiPolygon.
+    """
+
+    def __init__(self, backend: BaseBackend | None = None):
+        self.backend = backend or CV2Backend()
+
+    def select(self, source: ImageSource, title: str = "pixpick", frame: int = 0) -> MultiPolygon:
+        image = load_image(source, frame=frame)
+        w, h = image_size(image)
+
+        raw = self.backend.select_multi_polygon(image, title=title)
+
+        if raw is None:
+            raise SelectionCancelled("Multi-polygon selection was cancelled by the user.")
+
+        polygons = [
+            Polygon(points=polygon, image_width=w, image_height=h)
+            for polygon in raw
+        ]
+        return MultiPolygon(polygons=polygons, image_width=w, image_height=h)
 
 
 class SelectionCancelled(Exception):
