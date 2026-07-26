@@ -4,17 +4,19 @@
 
 ```
 pixpick/
-├── core/
-│   └── selection.py      # Box, Multibox, Polygon — all properties and methods
+├── core/                       # All properties and methods
+│   ├── box.py                  # Box, Multibox
+│   ├── line.py                 # Line
+│   └── polygon.py              # Polygon, Multipolygon
 ├── selectors/
-│   ├── box.py            # BoxSelector
-│   └── polygon.py        # PolygonSelector
-│   └── line.py           # LineSelector
+│   ├── box_picker.py           # BoxSelector
+│   ├── line_picker.py          # LineSelector
+│   └── polygon_picker.py       # PolygonSelector
 ├── backends/
-│   ├── base.py           # AbstractBackend — contract for all backends
-│   └── cv2_backend.py    # CV2Backend (OpenCV window)
-├── utils.py              # load_image(), image_size()
-└── __init__.py           # box(), polygon(), load() — public API
+│   ├── base.py                 # AbstractBackend — contract for all backends
+│   └── cv2_backend.py          # CV2Backend (OpenCV window)
+├── utils.py                    # load_image(), image_size()
+└── __init__.py                 # box(), polygon(), load() — public API
 ```
 
 ## How the layers relate
