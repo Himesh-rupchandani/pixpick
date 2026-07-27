@@ -77,7 +77,7 @@ zone.norm                # [(x0n,y0n), ...]             0.0 – 1.0
 zone.bbox                # → Box   tight bbox around the polygon
 zone.npoints             # int
 ```
-For more details, see [Selectors](docs/selectors.md).
+For more details, see [Selectors](selectors.md).
 
 ---
 
