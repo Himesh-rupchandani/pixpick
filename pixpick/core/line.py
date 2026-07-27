@@ -97,6 +97,27 @@ class Line:
         x2, y2 = self.end
         return (x2 - x1, y2 - y1)
 
+    @property
+    def horizontal(self) -> list[tuple[float, float]]:
+        """Return a new Line points that is horizontal."""
+        cx, cy = self.center
+        length = self.length
+        half_length = length / 2
+        new_start = (int(cx - half_length), cy)
+        new_end = (int(cx + half_length), cy)
+        return [new_start, new_end]
+
+    @property
+    def vertical(self) -> list[tuple[float, float]]:
+        """Return a new Line points that is vertical."""
+        cx, cy = self.center
+        length = self.length
+        half_length = length / 2
+        new_start = (cx, int(cy - half_length))
+        new_end = (cx, int(cy + half_length))
+        return [new_start, new_end]
+
+    
     # ------------------------------------------------------------------ #
     # Adapter shortcuts                                                    #
     # ------------------------------------------------------------------ #
