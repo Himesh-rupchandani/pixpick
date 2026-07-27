@@ -61,29 +61,5 @@ class PolygonSelector:
             return MultiPolygon(polygons=[Polygon(points=p, image_width=w, image_height=h) for p in polygons], image_width=w, image_height=h)
 
 
-class MultiPolygonSelector:
-    """
-    Orchestrates: load image → open backend → capture multiple polygons → return MultiPolygon.
-    """
-
-    def __init__(self, backend: BaseBackend | None = None):
-        self.backend = backend or CV2Backend()
-
-    def select(self, source: ImageSource, title: str = "pixpick", frame: int = 0) -> MultiPolygon:
-        image = load_image(source, frame=frame)
-        w, h = image_size(image)
-
-        raw = self.backend.select_multi_polygon(image, title=title)
-
-        if raw is None:
-            raise SelectionCancelled("Multi-polygon selection was cancelled by the user.")
-
-        polygons = [
-            Polygon(points=polygon, image_width=w, image_height=h)
-            for polygon in raw
-        ]
-        return MultiPolygon(polygons=polygons, image_width=w, image_height=h)
-
-
 class SelectionCancelled(Exception):
     """Raised when the user cancels an interactive selection (Esc)."""
