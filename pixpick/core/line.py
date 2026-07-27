@@ -81,6 +81,22 @@ class Line:
         x2, y2 = self.points[1]
         return ((x2 - x1) ** 2 + (y2 - y1) ** 2) ** 0.5
 
+    @property
+    def start(self) -> tuple[int, int]:
+        """First point of the line."""
+        return self.points[0]
+
+    @property
+    def end(self) -> tuple[int, int]:
+        """Last point of the line."""
+        return self.points[-1]
+
+    @property
+    def vector(self) -> tuple[float, float]:
+        x1, y1 = self.start
+        x2, y2 = self.end
+        return (x2 - x1, y2 - y1)
+
     # ------------------------------------------------------------------ #
     # Adapter shortcuts                                                    #
     # ------------------------------------------------------------------ #
@@ -93,6 +109,9 @@ class Line:
             "normalized_numpy":  self.norm_numpy.tolist(),
             "center":            self.center,
             "length":            self.length,
+            "start":             self.start,
+            "end":               self.end,
+            "vector":            self.vector,
         }
 
     # ------------------------------------------------------------------ #
