@@ -9,17 +9,21 @@
 - JSON persistence
 - `pixpick.box()`, `pixpick.polygon()`, `pixpick.line()`, `pixpick.load()`
 
-## v0.2 — More selectors + environments
+
+## v0.2 — Multi-selection + video ✅
+
+- `pixpick.box()` — also allows to pick N boxes in one pass
+- `pixpick.polygon()` — also allows to pick N polygons in one pass
+- Accept video path and frame number for all selectors
+
+
+## v0.3 — More selectors + environments
 
 - `Points` selector — click foreground/background points for SAM2 / SAM3
 - `Perspective` selector — 4-corner pick for BEV `sv.ViewTransformer`
 - `NotebookBackend` — Matplotlib-based, works in Jupyter and Colab
 - `GradioBackend` — works on headless servers and SSH sessions
 
-## v0.3 — Video + multi-selection
-
-- `pixpick.multi_polygon()` — pick N zones in one pass
-- Video scrubbar UI in cv2 backend
 
 ## v0.4 — Polish + CLI
 
