@@ -24,7 +24,7 @@ Quick start
 """
 from __future__ import annotations
 from pixpick.selectors.box_picker import BoxSelector
-from pixpick.selectors.polygon_picker import PolygonSelector, MultiPolygonSelector, SelectionCancelled
+from pixpick.selectors.polygon_picker import PolygonSelector, SelectionCancelled
 from pixpick.selectors.line_picker import LineSelector
 from pixpick.core.box import Box, Multibox
 from pixpick.core.polygon import Polygon, MultiPolygon
@@ -84,30 +84,6 @@ def polygon(source: ImageSource, title: str = "pixpick", frame: int = 0) -> Poly
     return PolygonSelector().select(source, title=title, frame=frame)
 
 
-def multi_polygon(source: ImageSource, title: str = "pixpick", frame: int = 0) -> MultiPolygon:
-    """
-    Open an interactive window on `source`, save completed polygons with Space, and return a MultiPolygon.
-
-    Parameters
-    ----------
-    source : str | Path | np.ndarray
-        Image file path or BGR numpy array.
-    title : str
-        Window title shown to the user.
-    frame : int
-        0-based frame number to load when source is a video.
-
-    Returns
-    -------
-    MultiPolygon
-
-    Raises
-    ------
-    SelectionCancelled
-        If the user pressed Esc.
-    """
-    return MultiPolygonSelector().select(source, title=title, frame=frame)
-
 def line(source: ImageSource, title: str = "pixpick", frame: int = 0) -> Line:
     """
     Open an interactive window on `source`, drag a line, return a Line.
@@ -131,6 +107,7 @@ def line(source: ImageSource, title: str = "pixpick", frame: int = 0) -> Line:
         If the user pressed Esc.
     """
     return LineSelector().select(source, title=title, frame=frame)
+
 
 def load(path: str) -> Box | Multibox | Polygon | MultiPolygon | Line:
     """
@@ -167,7 +144,6 @@ __all__ = [
     "Line",
     "BoxSelector",
     "PolygonSelector",
-    "MultiPolygonSelector",
     "LineSelector",
     "SelectionCancelled",
 ]
