@@ -44,15 +44,19 @@ def make_box():
     return _make_box
 
 @pytest.fixture
-def multibox():
-    return Multibox(
-        boxes=[
-            [100, 50, 400, 300],
-            [500, 200, 800, 600],
-        ],
-        image_width=1920,
-        image_height=1080,
-    )
+def make_multibox():
+    def _make_multibox(**kwargs):
+        defaults = dict(
+            boxes=[
+                [100, 50, 400, 300],
+                [500, 200, 800, 600]
+            ],
+            image_width=1920,
+            image_height=1080,
+        )
+        defaults.update(kwargs)
+        return Multibox(**defaults)
+    return _make_multibox
 
 @pytest.fixture
 def polygon():
@@ -272,40 +276,136 @@ class TestBoxVisualize:
 # Multibox — construction and properties                                    #
 # ======================================================================== #
 
-class TestMultibox:
+class TestMultiboxConstruction:
 
-    def test_basic(self, multibox):
+    def test_basic(self, make_multibox):
+        multibox = make_multibox()
 
         assert multibox.xyxy == [
             [100, 50, 400, 300],
             [500, 200, 800, 600],
         ]
 
-    def test_properties(self, multibox):
+    def test_empty_boxes_raises(self, make_multibox):
+            with pytest.raises(ValueError, match="Multibox must contain at least two Box."):
+                make_multibox(boxes=[])
+                
+    def test_invalid_box_raises(self, make_multibox):
+        with pytest.raises(ValueError):
+            make_multibox(boxes=[[100, 50, 100, 300]])
 
+
+# ======================================================================== #
+# Multibox — coordinate properties                                               #
+# ======================================================================== #
+
+class TestMultiboxProperties:
+
+    def test_xyxy(self, make_multibox):
+        multibox = make_multibox()
+        assert multibox.xyxy == [
+            [100, 50, 400, 300],
+            [500, 200, 800, 600],
+        ]
+
+    def test_xywh(self, make_multibox):
+        multibox = make_multibox()
         assert multibox.xywh == [
             [100, 50, 300, 250],
             [500, 200, 300, 400],
         ]
-        assert multibox.center == [[250, 175], [650, 400]]
-        assert multibox.area == [300 * 250, 300 * 400]
+
+    def test_cxcywh(self, make_multibox):
+        multibox = make_multibox()
+
+        assert multibox.cxcywh == [
+            [250.0, 175.0, 300.0, 250.0],
+            [650.0, 400.0, 300.0, 400.0],
+        ]
+
+    def test_norm(self, make_multibox):
+        multibox = make_multibox()
+
+        norm = multibox.norm
+        assert len(norm) == 2
+        assert all(all(0 <= v <= 1 for v in box) for box in norm)
+
+    def test_norm_xywh(self, make_multibox):
+        multibox = make_multibox()
+
+        norm = multibox.norm_xywh
+        assert len(norm) == 2
+
+    def test_center(self, make_multibox):
+        multibox = make_multibox()
+        assert multibox.center == [
+            [250, 175],
+            [650, 400],
+        ]
+
+    def test_area(self, make_multibox):
+        multibox = make_multibox()
+        assert multibox.area == [
+            300 * 250,
+            300 * 400,
+        ]
+
+    def test_as_numpy(self, make_multibox):
+        multibox = make_multibox()
+
+        arr = multibox.as_numpy
+        assert arr.shape == (2, 4)
+        assert arr.dtype == np.int32
+
+
+
+# ======================================================================== #
+# Multibox — framework methods                                             #
+# ======================================================================== #
+
+class TestMultiboxAdapters:
+
+    def test_yolo_region(self, make_multibox):
+        multibox = make_multibox()
+
+        assert len(multibox.yolo_region()) == 2
+
+    def test_yolo_prompt(self, make_multibox):
+        multibox = make_multibox()
+
         np.testing.assert_array_equal(
-            multibox.as_numpy,
-            np.array(
-                [
-                    [100, 50, 400, 300],
-                    [500, 200, 800, 600],
-                ],
-                dtype=np.int32,
-            ),
+            multibox.yolo_prompt(),
+            np.array([
+                [100, 50, 400, 300],
+                [500, 200, 800, 600],
+            ]),
         )
 
-    def test_raw_keys(self, multibox):
+    def test_sam(self, make_multibox):
+        multibox = make_multibox()
+
+        np.testing.assert_array_equal(
+            multibox.sam(),
+            np.array([
+                [100, 50, 400, 300],
+                [500, 200, 800, 600],
+            ]),
+        )
+
+    def test_raw_keys(self, make_multibox):
+        multibox = make_multibox()
 
         raw = multibox.raw()
-        expected = {"xyxy", "xywh", "cxcywh", "normalized", "normalized_xywh", "numpy"}
-        assert expected.issubset(raw.keys())
+        expected = {
+            "xyxy",
+            "xywh",
+            "cxcywh",
+            "normalized",
+            "normalized_xywh",
+            "numpy",
+        }
 
+        assert expected.issubset(raw.keys())
 
 # ======================================================================== #
 # Multibox — persistence                                                   #
@@ -313,13 +413,17 @@ class TestMultibox:
 
 class TestMultiboxPersistence:
 
-    def test_round_trip(self, multibox):
+    def test_round_trip(self, make_multibox):
+        multibox = make_multibox()
 
         with tempfile.NamedTemporaryFile(suffix=".json", delete=False) as f:
             path = f.name
+
         try:
             multibox.save(path)
+
             reloaded = Multibox.load(path)
+
             assert reloaded.xyxy == multibox.xyxy
             assert reloaded.image_width == multibox.image_width
             assert reloaded.image_height == multibox.image_height
@@ -333,14 +437,17 @@ class TestMultiboxPersistence:
 
 class TestMultiboxVisualize:
 
-    def test_returns_same_shape(self, multibox, sample_image):
+    def test_returns_same_shape(self, make_multibox, sample_image):
+        multibox = make_multibox()
         vis = multibox.visualize(sample_image)
         assert vis.shape == sample_image.shape
 
-    def test_does_not_mutate_original(self, multibox, sample_image):
+    def test_does_not_mutate_original(self, make_multibox, sample_image):
+        multibox = make_multibox()
         original = sample_image.copy()
         multibox.visualize(sample_image)
         np.testing.assert_array_equal(sample_image, original)
+
 
 
 # ======================================================================== #
@@ -500,10 +607,11 @@ class TestLoadDispatcher:
         finally:
             os.unlink(path)
 
-    def test_dispatches_multibox(self, multibox):
+    def test_dispatches_multibox(self, make_multibox):
         with tempfile.NamedTemporaryFile(suffix=".json", delete=False) as f:
             path = f.name
         try:
+            multibox = make_multibox()
             multibox.save(path)
             result = load(path)
             assert isinstance(result, Multibox)
