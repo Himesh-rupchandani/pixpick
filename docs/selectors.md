@@ -134,5 +134,5 @@ zones.as_numpy        # np.array shape (N, 2)      int32
 
 | Selector | Interaction | Returns | Release |
 |---|---|---|---|
-| `pixpick.points()` | click (fg/bg toggle) | `Points` | v0.2 |
-| `pixpick.perspective()` | 4-corner click | `Perspective` | v0.2 |
+| `pixpick.points()` | click (fg/bg toggle) | `Points` | v0.3.0 |
+| `pixpick.perspective()` | 4-corner click | `Perspective` | v0.3.0 |
