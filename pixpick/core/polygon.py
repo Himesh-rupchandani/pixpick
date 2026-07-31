@@ -79,13 +79,12 @@ class Polygon:
     def npoints(self) -> int:
         return len(self.points)
 
-    # ------------------------------------------------------------------ #
-    # Adapter shortcuts                                                    #
-    # ------------------------------------------------------------------ #
+    @property
     def yolo_region(self) -> list[tuple[int, int]]:
         """[(point1), (point2), (point3), ...]"""
         return self.points
 
+    @property
     def supervision(self) -> dict:
         """
         Ready to unpack into sv.PolygonZone().
@@ -96,6 +95,7 @@ class Polygon:
         """
         return {"polygon": self.as_numpy}
 
+    @property
     def raw(self) -> dict:
         """All formats at once."""
         return {
@@ -224,26 +224,7 @@ class MultiPolygon:
         """List of (N, 2) float32 arrays, one per polygon."""
         return [polygon.norm_numpy for polygon in self.polygons]
 
-    def visualize(
-        self,
-        image: np.ndarray,
-        color: tuple = (0, 0, 255),
-        thickness: int = 2,
-        fill_alpha: float = 0.15,
-    ) -> np.ndarray:
-        """Draw all polygons on a copy of image and return it."""
-        canvas = image.copy()
-
-        for polygon in self.polygons:
-            canvas = polygon.visualize(
-                canvas,
-                color=color,
-                thickness=thickness,
-                fill_alpha=fill_alpha,
-            )
-
-        return canvas
-
+    @property
     def raw(self) -> dict:
         """All formats at once — handy for debugging."""
         return {
@@ -277,6 +258,28 @@ class MultiPolygon:
             for polygon in data["coordinates"]["polygons"]
         ]
         return cls(polygons=polygons, image_width=w, image_height=h)
+
+
+    def visualize(
+        self,
+        image: np.ndarray,
+        color: tuple = (0, 0, 255),
+        thickness: int = 2,
+        fill_alpha: float = 0.15,
+    ) -> np.ndarray:
+        """Draw all polygons on a copy of image and return it."""
+        canvas = image.copy()
+
+        for polygon in self.polygons:
+            canvas = polygon.visualize(
+                canvas,
+                color=color,
+                thickness=thickness,
+                fill_alpha=fill_alpha,
+            )
+
+        return canvas
+
 
     def __repr__(self) -> str:
         return (
