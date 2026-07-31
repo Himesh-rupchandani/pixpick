@@ -19,9 +19,6 @@ class Box:
     """
     Immutable result of a box selection.
 
-    All coordinate math lives here.
-    Adapters are thin — they just re-package what this class already holds.
-
     Attributes
     ----------
     x1, y1, x2, y2 : int
