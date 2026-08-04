@@ -117,10 +117,7 @@ class Line:
         new_end = (cx, int(cy + half_length))
         return [new_start, new_end]
 
-    
-    # ------------------------------------------------------------------ #
-    # Adapter shortcuts                                                    #
-    # ------------------------------------------------------------------ #
+    @property
     def raw(self) -> dict:
         """All formats at once."""
         return {
