@@ -225,7 +225,16 @@ class MultiPolygon:
         """List of polygon point lists in absolute pixels."""
         return [polygon.points for polygon in self.polygons]
 
+    @property
+    def yolo_region(self) -> list[list[tuple[int, int]]]:
+        """List of polygon point lists in absolute pixels."""
+        return [polygon.points for polygon in self.polygons]
 
+    @property
+    def supervision(self) -> list[dict]:
+        """List of dicts ready to unpack into sv.PolygonZone() for each polygon."""
+        return [polygon.supervision for polygon in self.polygons]
+    
     @property
     def raw(self) -> dict:
         """All formats at once — handy for debugging."""
