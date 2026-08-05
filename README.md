@@ -42,10 +42,10 @@ regioncounter = RegionCounter(
  )
 
 # same for YOLOE
-model.predict("image.jpg", visual_prompt= region.yolo_prompt())
+model.predict("image.jpg", visual_prompt= region.yolo_prompt)
 
 # SAM/SAM2/SAM3:
-predictor.predict(box=region.sam())
+predictor.predict(box=region.sam)
 ```
 
 A window opens on your image, video, or a specific video frame. You interact. You get framework-ready coordinates back in Python. No round-trips.

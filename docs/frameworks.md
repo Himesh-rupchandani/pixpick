@@ -18,7 +18,7 @@ results = model.predict("image.jpg", **region.yolo_region)
 region = pixpick.box("image.jpg")
 
 visual_prompts = dict(
-    bboxes= region.yolo_prompt()
+    bboxes= region.yolo_prompt
 )
 
 # Run inference on an image, using the provided visual prompts as guidance
@@ -36,7 +36,7 @@ results = model.predict(visual_prompts=visual_prompts)
 ```python
 region = pixpick.box("image.jpg")
 predictor.set_image(image)
-masks, scores, _ = predictor.predict(box=region.sam())
+masks, scores, _ = predictor.predict(box=region.sam)
 ```
 
 ---
