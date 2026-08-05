@@ -31,9 +31,9 @@ BoxSelector.select(source)
     └── Box(...) or Multibox(...)    → returned to caller
                 │
                 ├── .xyxy / .xywh / .norm / ...   (properties)
-                ├── .yolo_region()                           (inline, no extra file)
-                ├── .sam()                           (inline, no extra file)
-                └── .save() / .load()                   (persistence)
+                ├── .yolo_region                  (inline, no extra file)
+                ├── .sam                          (inline, no extra file)
+                └── .save() / .load()             (persistence)
 ```
 
 ## Design decisions
