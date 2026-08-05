@@ -79,8 +79,8 @@ def select_box(image_path: str, color: tuple[int, int, int] = (0, 255, 0)) -> li
 For smaller helper methods, a single-line docstring is sufficient:
 
 ```python
-def to_dict(self) -> dict:
-    """Serialize coordinate properties into a standard key-value format."""
+def xyxy(self) -> list[int]:
+    """Returns bounding box coordinates in [x1, y1, x2, y2] format."""
     ...
 
 ```
