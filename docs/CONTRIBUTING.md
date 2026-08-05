@@ -47,7 +47,7 @@ When opening an issue, please include:
 
 ## 🤝 How to Submit a Pull Request
 
-1. **Fork & Branch**: Fork the repository and create a descriptive feature branch (`git checkout -b feature/add-line-selector`).
+1. **Fork & Branch**: Fork the repository and create a descriptive feature branch (`git checkout -b feat-line-selector`).
 2. **Keep PRs Scope-Focused**: Small, modular PRs that address a single bug or component are reviewed and merged much faster.
 3. **Test Local Changes**: Ensure your changes run cleanly without breaking existing OpenCV interactive workflows.
 4. **Submit PR**: Open a Pull Request into the `main` branch with a concise summary of what was added or changed.
