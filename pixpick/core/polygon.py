@@ -201,13 +201,9 @@ class MultiPolygon:
                 )
 
     @property
-    def npolygons(self) -> int:
-        return len(self.polygons)
-
-    @property
-    def points(self) -> list[list[tuple[int, int]]]:
-        """List of polygon point lists in absolute pixels."""
-        return [polygon.points for polygon in self.polygons]
+    def as_numpy(self) -> list[np.ndarray]:
+        """List of (N, 2) int32 arrays, one per polygon."""
+        return [polygon.as_numpy for polygon in self.polygons]
 
     @property
     def norm(self) -> list[list[tuple[float, float]]]:
@@ -215,14 +211,20 @@ class MultiPolygon:
         return [polygon.norm for polygon in self.polygons]
 
     @property
-    def as_numpy(self) -> list[np.ndarray]:
-        """List of (N, 2) int32 arrays, one per polygon."""
-        return [polygon.as_numpy for polygon in self.polygons]
-
-    @property
     def norm_numpy(self) -> list[np.ndarray]:
         """List of (N, 2) float32 arrays, one per polygon."""
         return [polygon.norm_numpy for polygon in self.polygons]
+
+    @property
+    def box(self) -> Box:
+        """List of tight axis-aligned Boxes that enclose each polygon."""
+        return [polygon.bbox for polygon in self.polygons]
+    
+    @property
+    def npoints(self) -> list[list[tuple[int, int]]]:
+        """List of polygon point lists in absolute pixels."""
+        return [polygon.points for polygon in self.polygons]
+
 
     @property
     def raw(self) -> dict:
