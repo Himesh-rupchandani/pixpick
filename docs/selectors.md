@@ -128,6 +128,36 @@ zones.points          # [[(x0,y0), ...], [(x0,y0), ...], ...]
 zones.as_numpy        # np.array shape (N, 2)      int32
 ```
 
+
+## Line
+
+```python
+line = pixpick.line("image.jpg")
+```
+
+`pixpick.line()` returns a `Line` object when you draw a line by clicking two points.
+
+`pixpick.line()` accepts an image path, a video path, or a BGR numpy array. Use `frame=` to choose the video frame.
+
+
+### Properties
+
+```python
+line.points             # [(x0,y0), (x1,y1)]         list of tuples, absolute pixels
+line.as_numpy           # np.array shape (2, 2)      int32
+line.norm               # [(x0n,y0n), (x1n,y1n)]     0.0 – 1.0
+line.norm_numpy         # np.array shape (2, 2)      float32
+line.length             # float                       pixels
+line.center             # (cx, cy)                    absolute pixels
+```
+
+### Persistence
+
+```python
+line.save("line.json")
+line = pixpick.load("line.json")   # or Line.load("line.json")
+```
+
 ---
 
 ## Coming in future releases
