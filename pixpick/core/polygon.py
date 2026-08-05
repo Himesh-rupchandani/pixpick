@@ -86,13 +86,7 @@ class Polygon:
 
     @property
     def supervision(self) -> dict:
-        """
-        Ready to unpack into sv.PolygonZone().
-
-        Usage
-        -----
-        zone = sv.PolygonZone(**polygon.supervision())
-        """
+        """Ready to unpack into sv.PolygonZone()"""
         return {"polygon": self.as_numpy}
 
     @property
@@ -201,13 +195,9 @@ class MultiPolygon:
                 )
 
     @property
-    def npolygons(self) -> int:
-        return len(self.polygons)
-
-    @property
-    def points(self) -> list[list[tuple[int, int]]]:
-        """List of polygon point lists in absolute pixels."""
-        return [polygon.points for polygon in self.polygons]
+    def as_numpy(self) -> list[np.ndarray]:
+        """List of (N, 2) int32 arrays, one per polygon."""
+        return [polygon.as_numpy for polygon in self.polygons]
 
     @property
     def norm(self) -> list[list[tuple[float, float]]]:
@@ -215,22 +205,39 @@ class MultiPolygon:
         return [polygon.norm for polygon in self.polygons]
 
     @property
-    def as_numpy(self) -> list[np.ndarray]:
-        """List of (N, 2) int32 arrays, one per polygon."""
-        return [polygon.as_numpy for polygon in self.polygons]
-
-    @property
     def norm_numpy(self) -> list[np.ndarray]:
         """List of (N, 2) float32 arrays, one per polygon."""
         return [polygon.norm_numpy for polygon in self.polygons]
 
     @property
+    def box(self) -> Box:
+        """List of tight axis-aligned Boxes that enclose each polygon."""
+        return [polygon.bbox for polygon in self.polygons]
+    
+    @property
+    def npoints(self) -> list[list[tuple[int, int]]]:
+        """List of polygon point lists in absolute pixels."""
+        return [polygon.points for polygon in self.polygons]
+
+    @property
+    def yolo_region(self) -> list[list[tuple[int, int]]]:
+        """List of polygon point lists in absolute pixels."""
+        return [polygon.points for polygon in self.polygons]
+
+    @property
+    def supervision(self) -> list[dict]:
+        """List of dicts ready to unpack into sv.PolygonZone() for each polygon."""
+        return [polygon.supervision for polygon in self.polygons]
+    
+    @property
     def raw(self) -> dict:
         """All formats at once — handy for debugging."""
         return {
-            "polygons": [polygon.raw() for polygon in self.polygons],
-            "points": self.points,
-            "normalized": self.norm,
+            "points": [polygon.npoints for polygon in self.polygons],
+            "numpy": [polygon.as_numpy.tolist() for polygon in self.polygons],
+            "normalized": [polygon.norm for polygon in self.polygons],
+            "normalized_numpy": [polygon.norm_numpy.tolist() for polygon in self.polygons],
+            "bbox_xyxy": [polygon.bbox for polygon in self.polygons],
         }
 
     def save(self, path: str | Path) -> None:
