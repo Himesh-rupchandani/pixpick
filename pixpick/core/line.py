@@ -81,9 +81,43 @@ class Line:
         x2, y2 = self.points[1]
         return ((x2 - x1) ** 2 + (y2 - y1) ** 2) ** 0.5
 
-    # ------------------------------------------------------------------ #
-    # Adapter shortcuts                                                    #
-    # ------------------------------------------------------------------ #
+    @property
+    def start(self) -> tuple[int, int]:
+        """First point of the line."""
+        return self.points[0]
+
+    @property
+    def end(self) -> tuple[int, int]:
+        """Last point of the line."""
+        return self.points[-1]
+
+    @property
+    def vector(self) -> tuple[float, float]:
+        x1, y1 = self.start
+        x2, y2 = self.end
+        return (x2 - x1, y2 - y1)
+
+    @property
+    def horizontal(self) -> list[tuple[float, float]]:
+        """Return a new Line points that is horizontal."""
+        cx, cy = self.center
+        length = self.length
+        half_length = length / 2
+        new_start = (int(cx - half_length), cy)
+        new_end = (int(cx + half_length), cy)
+        return [new_start, new_end]
+
+    @property
+    def vertical(self) -> list[tuple[float, float]]:
+        """Return a new Line points that is vertical."""
+        cx, cy = self.center
+        length = self.length
+        half_length = length / 2
+        new_start = (cx, int(cy - half_length))
+        new_end = (cx, int(cy + half_length))
+        return [new_start, new_end]
+
+    @property
     def raw(self) -> dict:
         """All formats at once."""
         return {
@@ -93,6 +127,9 @@ class Line:
             "normalized_numpy":  self.norm_numpy.tolist(),
             "center":            self.center,
             "length":            self.length,
+            "start":             self.start,
+            "end":               self.end,
+            "vector":            self.vector,
         }
 
     # ------------------------------------------------------------------ #

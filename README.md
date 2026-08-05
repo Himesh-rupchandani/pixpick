@@ -74,6 +74,8 @@ pip install pixpick
 
 **Polygon controls** — `LMB` add point · `RMB` undo · `Z` clear · `Enter` confirm · `Esc` cancel
 
+**Line controls** — `LMB` start → `LMB` end · `RMB` undo · `Z` clear · `Enter` confirm · `Esc` cancel
+
 ---
 
 ## Output formats
@@ -99,6 +101,16 @@ zone.as_numpy            # np.array shape (N, 2)
 zone.norm                # [(x0n,y0n), ...]             0.0 – 1.0
 zone.bbox                # → Box   tight bbox around the polygon
 zone.npoints             # int
+
+
+## ── Line ─────────────────────────────────────────────────────
+line = pixpick.line("frame.jpg")
+
+line.points              # [(x0,y0), (x1,y1)]           absolute pixels
+line.as_numpy            # np.array shape (2, 2)
+line.norm                # [(x0n,y0n), (x1n,y1n)]       0.0 – 1.0
+line.center              # (cx, cy)
+line.length              # pixels
 ```
 For more details, see [Selectors](docs/selectors.md).
 

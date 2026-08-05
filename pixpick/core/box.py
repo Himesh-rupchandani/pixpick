@@ -19,9 +19,6 @@ class Box:
     """
     Immutable result of a box selection.
 
-    All coordinate math lives here.
-    Adapters are thin — they just re-package what this class already holds.
-
     Attributes
     ----------
     x1, y1, x2, y2 : int
@@ -109,10 +106,7 @@ class Box:
         """Shape (4,) int32 array — [x1, y1, x2, y2]."""
         return np.array(self.xyxy, dtype=np.int32)
 
-    # ------------------------------------------------------------------ #
-    # Adapter shortcuts                                                    #
-    # ------------------------------------------------------------------ #
-
+    @property
     def yolo_region(self) -> list[float]:
         """[(point1), (point2), (point3), (point4)] """
         return [
@@ -122,16 +116,19 @@ class Box:
             (self.x1, self.y2)
         ]
 
+    @property
     def yolo_prompt(self) -> np.ndarray:
         """[(point1), (point2), (point3), (point4)] """
         return np.array([
             [self.x1, self.y1, self.x2, self.y2]
         ])
 
+    @property
     def sam(self) -> list[int]:
         """[(point1), (point2), (point3), (point4)] """
         return [self.x1, self.y1, self.x2, self.y2]
 
+    @property
     def raw(self) -> dict:
         """All formats at once — handy for debugging."""
         return {
@@ -297,11 +294,7 @@ class Multibox:
         """Shape (N, 4) int32 array — [[x1, y1, x2, y2], ...]."""
         return np.array(self.boxes, dtype=np.int32)
 
-
-    # ------------------------------------------------------------------ #
-    # Adapter shortcuts                                                    #
-    # ------------------------------------------------------------------ #
-
+    @property
     def yolo_region(self) -> list[float]:
         """[(point1), (point2), (point3), (point4)] """
         return [[
@@ -311,6 +304,7 @@ class Multibox:
             (box[0], box[3])
         ] for box in self.boxes ]
 
+    @property
     def yolo_prompt(self) -> np.ndarray:
         """[(point1), (point2), (point3), (point4)] """
         return np.array([
@@ -318,11 +312,12 @@ class Multibox:
             for box in self.boxes
         ])
 
+    @property
     def sam(self) -> list[list[int]] :
         """[(point1), (point2), (point3), (point4)] """
         return self.boxes
 
-
+    @property
     def raw(self) -> dict:
         """All formats at once — handy for debugging."""
         return {

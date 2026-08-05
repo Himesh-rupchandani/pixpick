@@ -174,7 +174,7 @@ class TestBoxAdapters:
 
     def test_yolo_region(self, make_box):
         box = make_box()
-        assert box.yolo_region() == [
+        assert box.yolo_region == [
             (100, 50),
             (400, 50),
             (400, 300),
@@ -184,23 +184,23 @@ class TestBoxAdapters:
     def test_yolo_prompt(self, make_box):
         box = make_box()
         np.testing.assert_array_equal(
-            box.yolo_prompt(),
+            box.yolo_prompt,
             np.array([[100, 50, 400, 300]]),
         )
 
     def test_sam(self, make_box):
         box = make_box()
-        np.testing.assert_array_equal(box.sam(), np.array([100, 50, 400, 300]))
+        np.testing.assert_array_equal(box.sam, np.array([100, 50, 400, 300]))
 
     def test_raw_keys(self, make_box):
         box = make_box()
-        raw = box.raw()
+        raw = box.raw
         expected = {"xyxy", "xywh", "cxcywh", "normalized", "normalized_xywh", "numpy"}
         assert expected.issubset(raw.keys())
 
     def test_raw_xyxy_matches(self, make_box):
         box = make_box()
-        assert box.raw()["xyxy"] == box.xyxy
+        assert box.raw["xyxy"] == box.xyxy
 
 
 # ======================================================================== #
@@ -373,13 +373,13 @@ class TestMultiboxAdapters:
     def test_yolo_region(self, make_multibox):
         multibox = make_multibox()
 
-        assert len(multibox.yolo_region()) == 2
+        assert len(multibox.yolo_region) == 2
 
     def test_yolo_prompt(self, make_multibox):
         multibox = make_multibox()
 
         np.testing.assert_array_equal(
-            multibox.yolo_prompt(),
+            multibox.yolo_prompt,
             np.array([
                 [100, 50, 400, 300],
                 [500, 200, 800, 600],
@@ -390,7 +390,7 @@ class TestMultiboxAdapters:
         multibox = make_multibox()
 
         np.testing.assert_array_equal(
-            multibox.sam(),
+            multibox.sam,
             np.array([
                 [100, 50, 400, 300],
                 [500, 200, 800, 600],
@@ -400,7 +400,7 @@ class TestMultiboxAdapters:
     def test_raw_keys(self, make_multibox):
         multibox = make_multibox()
 
-        raw = multibox.raw()
+        raw = multibox.raw
         expected = {
             "xyxy",
             "xywh",
@@ -527,20 +527,17 @@ class TestPolygonProperties:
 
 class TestPolygonAdapters:
 
-    def test_to_supervision_key(self, make_polygon):
-        polygon = make_polygon()
-        result = polygon.supervision()
+    def test_to_supervision_key(self, polygon):
+        result = polygon.supervision
         assert "polygon" in result
 
-    def test_to_supervision_numpy(self, make_polygon):
-        polygon = make_polygon()
-        arr = polygon.supervision()["polygon"]
+    def test_to_supervision_numpy(self, polygon):
+        arr = polygon.supervision["polygon"]
         assert isinstance(arr, np.ndarray)
         assert arr.shape == (4, 2)
 
-    def test_raw_keys(self, make_polygon):
-        polygon = make_polygon()
-        raw = polygon.raw()
+    def test_raw_keys(self, polygon):
+        raw = polygon.raw
         expected = {"points", "numpy", "normalized", "normalized_numpy", "bbox_xyxy"}
         assert expected.issubset(raw.keys())
 
