@@ -239,9 +239,11 @@ class MultiPolygon:
     def raw(self) -> dict:
         """All formats at once — handy for debugging."""
         return {
-            "polygons": [polygon.raw() for polygon in self.polygons],
-            "points": self.points,
-            "normalized": self.norm,
+            "points": [polygon.npoints for polygon in self.polygons],
+            "numpy": [polygon.as_numpy.tolist() for polygon in self.polygons],
+            "normalized": [polygon.norm for polygon in self.polygons],
+            "normalized_numpy": [polygon.norm_numpy.tolist() for polygon in self.polygons],
+            "bbox_xyxy": [polygon.bbox for polygon in self.polygons],
         }
 
     def save(self, path: str | Path) -> None:
