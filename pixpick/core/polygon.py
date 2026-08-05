@@ -86,13 +86,7 @@ class Polygon:
 
     @property
     def supervision(self) -> dict:
-        """
-        Ready to unpack into sv.PolygonZone().
-
-        Usage
-        -----
-        zone = sv.PolygonZone(**polygon.supervision())
-        """
+        """Ready to unpack into sv.PolygonZone()"""
         return {"polygon": self.as_numpy}
 
     @property
