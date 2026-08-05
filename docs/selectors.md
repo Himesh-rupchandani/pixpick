@@ -30,10 +30,10 @@ region.image_height     # int
 ### Framework methods
 
 ```python
-region.yolo_region()
-region.yolo_prompt()
-region.sam()
-region.raw()         # all formats in one dict
+region.yolo_region
+region.yolo_prompt
+region.sam
+region.raw         # all formats in one dict
 ```
 
 ### Visualise
@@ -90,8 +90,8 @@ zone.image_height       # int
 ### Framework methods
 
 ```python
-zone.yolo_region()
-zone.raw()           # all formats in one dict
+zone.yolo_region
+zone.raw           # all formats in one dict
 ```
 
 ### Visualise

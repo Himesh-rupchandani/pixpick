@@ -85,7 +85,7 @@ For more details, see [Selectors](selectors.md).
 
 | Framework | Selector | Method |
 |---|---|---|
-| Ultralytics YOLOE — visual prompt | `Box` | `region.yolo_prompt()` |
-| Ultralytics YOLO — region | `Box`/`Polygon` | `region.yolo_region()` |
-| SAM / SAM2 / SAM3 — box prompt | `Box` | `region.sam()` |
-| Any other format | `Box` / `Polygon` | `region.raw()` |
+| Ultralytics YOLOE — visual prompt | `Box` | `region.yolo_prompt` |
+| Ultralytics YOLO — region | `Box`/`Polygon` | `region.yolo_region` |
+| SAM / SAM2 / SAM3 — box prompt | `Box` | `region.sam` |
+| Any other format | `Box` / `Polygon` | `region.raw` |

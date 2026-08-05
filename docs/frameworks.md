@@ -8,7 +8,7 @@ All conversion methods return a dict that unpacks directly into the framework's 
 
 ```python
 region = pixpick.box("image.jpg")
-results = model.predict("image.jpg", **region.yolo_region())
+results = model.predict("image.jpg", **region.yolo_region)
 # expands to: model.predict("image.jpg", crop=[x1, y1, x2, y2])
 ```
 

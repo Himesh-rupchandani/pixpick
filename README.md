@@ -37,7 +37,7 @@ zone   = pixpick.polygon("image.jpg")        # click polygon vertices
 # coordinates are ready — unpack directly into any framework
 # YOLO:
 regioncounter = RegionCounter(
-     region=zone.yolo_region(),  # pass region points
+     region=zone.yolo_region,  # pass region points
      model="yolo26n.pt",
  )
 
@@ -120,10 +120,10 @@ For more details, see [Selectors](docs/selectors.md).
 
 | Framework | Selector | Method |
 |---|---|---|
-| Ultralytics YOLOE — visual prompt | `Box` | `region.yolo_prompt()` |
-| Ultralytics YOLO — region | `Box`/`Polygon` | `region.yolo_region()` |
-| SAM / SAM2 / SAM3 — box prompt | `Box` | `region.sam()` |
-| Any other format | `Box` / `Polygon` | `region.raw()` |
+| Ultralytics YOLOE — visual prompt | `Box` | `region.yolo_prompt` |
+| Ultralytics YOLO — region | `Box`/`Polygon` | `region.yolo_region` |
+| SAM / SAM2 / SAM3 — box prompt | `Box` | `region.sam` |
+| Any other format | `Box` / `Polygon` | `region.raw` |
 
 ---
 
