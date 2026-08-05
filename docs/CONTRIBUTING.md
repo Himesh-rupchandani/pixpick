@@ -1,23 +1,28 @@
-# Contributing
-We welcome contributions! Please open a GitHub issue or submit a pull request. For major changes, please open an issue first to discuss what you would like to change then submit a pull request.
+# Contributing to pixpick
 
-Below are some guidelines for contributing to the project.
+Welcome! We are excited that you are interested in contributing to `pixpick`. Whether you are fixing a bug, improving documentation, or adding a new visual selector, your contributions help make interactive computer vision workflows faster and easier for everyone.
 
-## Adding a new selector type (e.g. Line)
+---
 
-1. Add `point` dataclass to `core/point.py` with properties and persistence methods.
-2. Add `select_point()` to `BaseBackend` and implement it in `CV2Backend`.
-3. Create `selectors/point_picker.py` with `PointSelector`.
-4. Add `pixpick.point()` to `__init__.py`.
+## 🚀 Quickstart Development Guide
 
-No other files change.
+Follow these minimal architecture rules when extending `pixpick`:
 
-## Adding a new properties or persistence methods
+### Adding a New Selector Type (e.g. Line, Point)
 
-Add a property directly to the relevant file in `core/<class>.py`, for example to add property in class box make changes to `core/box.py` 
+1. **Core Data Structure**: Add a point or geometry dataclass to `core/<type>.py` with necessary properties (e.g., coordinate exports like `.xyxy`, `.sam()`) and persistence methods (`save()`, `load()`).
+2. **Backend Engine**: Add `select_<type>()` to `BaseBackend` and implement its interactive drawing behavior in `CV2Backend`.
+3. **Selector Interface**: Create `selectors/<type>_picker.py` implementing `TypeSelector`.
+4. **Top-Level API**: Export the selector helper function (e.g., `pixpick.point()`) in `__init__.py`.
+
+> **Note**: No other foundational files should require changes.
+
+### Adding Properties or Persistence Methods
+
+Add properties or serialization methods directly to the targeted target class inside `core/<class>.py`:
 
 ```python
-# eg. in Box
+# Example in core/box.py
 @property
 def xyxy(self) -> list[int]:
     """[x1, y1, x2, y2] — absolute pixels for each box in boxes."""
@@ -25,4 +30,67 @@ def xyxy(self) -> list[int]:
 
 ```
 
-That's it.
+---
+
+## 🐞 Reporting Bugs & Opening Issues
+
+Before creating a new issue, please search existing [GitHub Issues](https://github.com/K-saif/pixpick/issues) to verify it hasn't already been reported.
+
+When opening an issue, please include:
+
+* **Clear Description**: A short title and detailed description of the bug or feature request.
+* **Minimum Reproducible Example**: A concise Python code snippet that reproduces the problem.
+* **Environment Details**: Your OS, Python version, OpenCV version, and hardware (if GPU/display windowing issues occur).
+* **Expected vs. Actual Behavior**: What you expected to happen versus what actually occurred (including tracebacks/error logs).
+
+---
+
+## 🤝 How to Submit a Pull Request
+
+1. **Fork & Branch**: Fork the repository and create a descriptive feature branch (`git checkout -b feature/add-line-selector`).
+2. **Keep PRs Scope-Focused**: Small, modular PRs that address a single bug or component are reviewed and merged much faster.
+3. **Test Local Changes**: Ensure your changes run cleanly without breaking existing OpenCV interactive workflows.
+4. **Submit PR**: Open a Pull Request into the `main` branch with a concise summary of what was added or changed.
+
+---
+
+## ✍️ Docstring Guidelines
+
+Use **Google-style docstrings** with type hints for new functions, classes, and selector methods:
+
+```python
+def select_box(image_path: str, color: tuple[int, int, int] = (0, 255, 0)) -> list[int]:
+    """Interactively select a bounding box region on an image.
+
+    Args:
+        image_path: Path to the target image file.
+        color: BGR tuple for rendering the bounding box overlay.
+
+    Returns:
+        Bounding box coordinates as absolute pixel values [x1, y1, x2, y2].
+
+    Examples:
+        >>> box = select_box("frame.jpg")
+    """
+    ...
+
+```
+
+For smaller helper methods, a single-line docstring is sufficient:
+
+```python
+def to_dict(self) -> dict:
+    """Serialize coordinate properties into a standard key-value format."""
+    ...
+
+```
+
+---
+
+## ✨ Best Practices
+
+* **Minimize Code Duplication**: Reuse shared backend utilities across selector types.
+* **Keep Dependencies Light**: `pixpick` is built to be a fast, lightweight toolkit—avoid adding heavy external dependencies unless strictly necessary.
+* **Preserve Output Standards**: Ensure bounding box and geometry outputs map cleanly into standard computer vision formats (`YOLO`, `SAM2`, `Supervision`).
+
+---
