@@ -527,16 +527,19 @@ class TestPolygonProperties:
 
 class TestPolygonAdapters:
 
-    def test_to_supervision_key(self, polygon):
+    def test_to_supervision_key(self, make_polygon):
+        polygon = make_polygon()
         result = polygon.supervision
         assert "polygon" in result
 
-    def test_to_supervision_numpy(self, polygon):
+    def test_to_supervision_numpy(self, make_polygon):
+        polygon = make_polygon()
         arr = polygon.supervision["polygon"]
         assert isinstance(arr, np.ndarray)
         assert arr.shape == (4, 2)
 
-    def test_raw_keys(self, polygon):
+    def test_raw_keys(self, make_polygon):
+        polygon = make_polygon()
         raw = polygon.raw
         expected = {"points", "numpy", "normalized", "normalized_numpy", "bbox_xyxy"}
         assert expected.issubset(raw.keys())
