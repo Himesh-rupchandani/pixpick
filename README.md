@@ -123,6 +123,7 @@ For more details, see [Selectors](docs/selectors.md).
 | Ultralytics YOLOE — visual prompt | `Box` | `region.yolo_prompt` |
 | Ultralytics YOLO — region | `Box`/`Polygon` | `region.yolo_region` |
 | SAM / SAM2 / SAM3 — box prompt | `Box` | `region.sam` |
+| Supervision PolygonZone — polygon | `Polygon` | `region.supervision` |
 | Any other format | `Box` / `Polygon` | `region.raw` |
 
 ---
@@ -166,4 +167,4 @@ zone.save(ZONE)
 
 ## Contributing
 
-We welcome contributions! Please open a GitHub issue or submit a pull request. For more information, see [CONTRIBUTING.md](https://github.com/K-saif/pixpick/blob/main/CONTRIBUTING.md).
+We welcome contributions! Please open a GitHub issue or submit a pull request. For more information, see [Contribution Guidelines](https://github.com/K-saif/pixpick/blob/main/CONTRIBUTING.md).
