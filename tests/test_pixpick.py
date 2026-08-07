@@ -59,12 +59,16 @@ def make_multibox():
     return _make_multibox
 
 @pytest.fixture
-def polygon():
-    return Polygon(
-        points=[(100, 50), (400, 50), (400, 300), (100, 300)],
-        image_width=1920,
-        image_height=1080,
-    )
+def make_polygon():
+    def _make_polygon(**kwargs):
+        defaults = dict(
+            points=[(100, 50), (400, 50), (400, 300), (100, 300)],
+            image_width=1920,
+            image_height=1080,
+        )
+        defaults.update(kwargs)
+        return Polygon(**defaults)
+    return _make_polygon
 
 @pytest.fixture
 def line():
@@ -242,7 +246,8 @@ class TestBoxPersistence:
         finally:
             os.unlink(path)
 
-    def test_load_wrong_type_raises(self, polygon):
+    def test_load_wrong_type_raises(self, make_polygon):
+        polygon = make_polygon()
         with tempfile.NamedTemporaryFile(suffix=".json", delete=False) as f:
             path = f.name
         try:
@@ -456,20 +461,20 @@ class TestMultiboxVisualize:
 
 class TestPolygonConstruction:
 
-    def test_basic(self, polygon):
+    def test_basic(self, make_polygon):
+        polygon = make_polygon()
         assert polygon.npoints == 4
 
-    def test_too_few_points_raises(self):
+    def test_too_few_points_raises(self, make_polygon):
         with pytest.raises(ValueError, match="at least 3"):
-            Polygon(
+            make_polygon(
                 points=[(0, 0), (100, 100)],
                 image_width=1920,
-                image_height=1080,
-            )
+                image_height=1080,)
 
-    def test_point_out_of_bounds_raises(self):
+    def test_point_out_of_bounds_raises(self, make_polygon):
         with pytest.raises(ValueError, match="outside image"):
-            Polygon(
+            make_polygon(
                 points=[(0, 0), (100, 100), (2000, 500)],
                 image_width=1920,
                 image_height=1080,
@@ -482,31 +487,37 @@ class TestPolygonConstruction:
 
 class TestPolygonProperties:
 
-    def test_as_numpy_shape(self, polygon):
+    def test_as_numpy_shape(self, make_polygon):
+        polygon = make_polygon()
         arr = polygon.as_numpy
         assert arr.shape == (4, 2)
         assert arr.dtype == np.int32
 
-    def test_norm_range(self, polygon):
+    def test_norm_range(self, make_polygon):
+        polygon = make_polygon()
         for x, y in polygon.norm:
             assert 0.0 <= x <= 1.0
             assert 0.0 <= y <= 1.0
 
-    def test_norm_numpy_shape(self, polygon):
+    def test_norm_numpy_shape(self, make_polygon):
+        polygon = make_polygon()
         arr = polygon.norm_numpy
         assert arr.shape == (4, 2)
         assert arr.dtype == np.float32
 
-    def test_bbox_type(self, polygon):
+    def test_bbox_type(self, make_polygon):
+        polygon = make_polygon()
         bbox = polygon.bbox
         assert isinstance(bbox, list)
 
-    def test_bbox_values(self, polygon):
+    def test_bbox_values(self, make_polygon):
+        polygon = make_polygon()
         # polygon is a rectangle (100,50)→(400,300)
         bbox = polygon.bbox
         assert bbox == [100, 50, 400, 300]
 
-    def test_n_points(self, polygon):
+    def test_n_points(self, make_polygon):
+        polygon = make_polygon()
         assert polygon.npoints == 4
 
 
@@ -516,16 +527,19 @@ class TestPolygonProperties:
 
 class TestPolygonAdapters:
 
-    def test_to_supervision_key(self, polygon):
+    def test_to_supervision_key(self, make_polygon):
+        polygon = make_polygon()
         result = polygon.supervision
         assert "polygon" in result
 
-    def test_to_supervision_numpy(self, polygon):
+    def test_to_supervision_numpy(self, make_polygon):
+        polygon = make_polygon()
         arr = polygon.supervision["polygon"]
         assert isinstance(arr, np.ndarray)
         assert arr.shape == (4, 2)
 
-    def test_raw_keys(self, polygon):
+    def test_raw_keys(self, make_polygon):
+        polygon = make_polygon()
         raw = polygon.raw
         expected = {"points", "numpy", "normalized", "normalized_numpy", "bbox_xyxy"}
         assert expected.issubset(raw.keys())
@@ -537,7 +551,8 @@ class TestPolygonAdapters:
 
 class TestPolygonPersistence:
 
-    def test_round_trip(self, polygon):
+    def test_round_trip(self, make_polygon):
+        polygon = make_polygon()
         with tempfile.NamedTemporaryFile(suffix=".json", delete=False) as f:
             path = f.name
         try:
@@ -549,7 +564,8 @@ class TestPolygonPersistence:
         finally:
             os.unlink(path)
 
-    def test_save_json_schema(self, polygon):
+    def test_save_json_schema(self, make_polygon):
+        polygon = make_polygon()
         with tempfile.NamedTemporaryFile(suffix=".json", delete=False) as f:
             path = f.name
         try:
@@ -579,11 +595,13 @@ class TestPolygonPersistence:
 
 class TestPolygonVisualize:
 
-    def test_returns_same_shape(self, polygon, sample_image):
+    def test_returns_same_shape(self, make_polygon, sample_image):
+        polygon = make_polygon()
         vis = polygon.visualize(sample_image)
         assert vis.shape == sample_image.shape
 
-    def test_does_not_mutate_original(self, polygon, sample_image):
+    def test_does_not_mutate_original(self, make_polygon, sample_image):
+        polygon = make_polygon()
         original = sample_image.copy()
         polygon.visualize(sample_image)
         np.testing.assert_array_equal(sample_image, original)
@@ -619,10 +637,11 @@ class TestLoadDispatcher:
         finally:
             os.unlink(path)
 
-    def test_dispatches_polygon(self, polygon):
+    def test_dispatches_polygon(self, make_polygon):
         with tempfile.NamedTemporaryFile(suffix=".json", delete=False) as f:
             path = f.name
         try:
+            polygon = make_polygon()
             polygon.save(path)
             result = load(path)
             assert isinstance(result, Polygon)
