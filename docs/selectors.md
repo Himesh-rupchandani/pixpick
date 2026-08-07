@@ -27,7 +27,7 @@ region.image_width      # int
 region.image_height     # int
 ```
 
-### Framework methods
+### Framework properties
 
 ```python
 region.yolo_region
@@ -81,16 +81,17 @@ zone.points             # [(x0,y0), (x1,y1), ...]   list of tuples, absolute pix
 zone.as_numpy           # np.array shape (N, 2)      int32
 zone.norm               # [(x0n,y0n), ...]           0.0 – 1.0
 zone.norm_numpy         # np.array shape (N, 2)      float32
-zone.npoints           # int
-zone.bbox       # Box  — tight axis-aligned bbox around the polygon
+zone.npoints            # int
+zone.bbox               # Box  — tight axis-aligned bbox around the polygon
 zone.image_width        # int
 zone.image_height       # int
 ```
 
-### Framework methods
+### Framework properties
 
 ```python
 zone.yolo_region
+zone.supervision
 zone.raw           # all formats in one dict
 ```
 
@@ -108,26 +109,18 @@ zone.save("zone.json")
 zone = pixpick.load("zone.json")   # or Polygon.load("zone.json")
 ```
 
----
 
-## Multi polygon
-
-```python
-zones = pixpick.multi_polygon("frame.jpg")
-print(zones.points)   # [[(x0,y0), ...], [(x0,y0), ...], ...]
-```
-
-`pixpick.multi_polygon()` uses the same interactive flow as the OpenCV polygon backend: draw a polygon, press Space to save it, draw another polygon, and press Enter to finish.
-
-# Multi-polygon results
+### Multi-polygon results
 
 ```python
-zones = pixpick.multi_polygon("frame.jpg")
+zones = pixpick.polygon("frame.jpg")
 zones.polygons        # [Polygon(...), Polygon(...), ...]
 zones.points          # [[(x0,y0), ...], [(x0,y0), ...], ...]
 zones.as_numpy        # np.array shape (N, 2)      int32
 ```
+`pixpick.polygon()` uses the same interactive flow as the OpenCV polygon backend: draw a polygon, press Space to save it, draw another polygon, and press Enter to finish.
 
+---
 
 ## Line
 
@@ -143,12 +136,19 @@ line = pixpick.line("image.jpg")
 ### Properties
 
 ```python
-line.points             # [(x0,y0), (x1,y1)]         list of tuples, absolute pixels
-line.as_numpy           # np.array shape (2, 2)      int32
-line.norm               # [(x0n,y0n), (x1n,y1n)]     0.0 – 1.0
-line.norm_numpy         # np.array shape (2, 2)      float32
-line.length             # float                       pixels
-line.center             # (cx, cy)                    absolute pixels
+line.center               # center point of the line (cx, cy)
+line.length               # length of the line
+line.start                # start point of the line (cx, cy)
+line.end                  # end point of the line (cx, cy)
+line.vertical             # True if vertical
+line.horizontal           # True if horizontal
+```
+
+### Visualise
+
+```python
+canvas = line.visualize(image)                        # default green, 15% fill
+canvas = line.visualize(image, color=(0,0,255), thickness=2)
 ```
 
 ### Persistence
