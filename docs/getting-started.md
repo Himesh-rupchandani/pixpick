@@ -6,7 +6,7 @@
 pip install pixpick
 ```
 
-Requires Python 3.8+ and OpenCV (`opencv-python` is pulled in automatically).
+Requires Python 3.9+ and OpenCV (`opencv-python` is pulled in automatically).
 
 ## Your first selection
 

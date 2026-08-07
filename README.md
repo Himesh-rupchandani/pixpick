@@ -6,7 +6,7 @@
 
 [![PyPI version](https://badge.fury.io/py/pixpick.svg)](https://badge.fury.io/py/pixpick)
 [![Downloads](https://pepy.tech/badge/pixpick)](https://clickpy.clickhouse.com/dashboard/pixpick)
-[![Python 3.8+](https://img.shields.io/badge/python-3.8+-blue.svg)](https://www.python.org/downloads/)
+[![Python 3.9+](https://img.shields.io/badge/python-3.9+-blue.svg)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Documentation](https://img.shields.io/badge/docs-online-blue)](https://k-saif.github.io/pixpick/)
 
@@ -20,8 +20,11 @@
 Every major CV framework needs coordinates before it can run.
 
 ```python
-regioncounter = RegionCounter(region=[120, 80, 640, 480])    # YOLO   — where does this region come from?
-predictor.predict(box=np.array([120, 80, 640, 480]))         # SAM2/SAM3   — same problem
+# YOLO 
+regioncounter = RegionCounter(region=[120, 80, 640, 480])    # where does this region come from?
+
+# SAM2/SAM3
+predictor.predict(box=np.array([120, 80, 640, 480]))         # same problem
 ```
 
 The standard workflow: open CVAT or Roboflow → grab coordinates → paste them back into code. Every. Single. Time.
@@ -123,6 +126,7 @@ For more details, see [Selectors](docs/selectors.md).
 | Ultralytics YOLOE — visual prompt | `Box` | `region.yolo_prompt` |
 | Ultralytics YOLO — region | `Box`/`Polygon` | `region.yolo_region` |
 | SAM / SAM2 / SAM3 — box prompt | `Box` | `region.sam` |
+| Supervision PolygonZone — polygon | `Polygon` | `region.supervision` |
 | Any other format | `Box` / `Polygon` | `region.raw` |
 
 ---
@@ -166,4 +170,4 @@ zone.save(ZONE)
 
 ## Contributing
 
-We welcome contributions! Please open a GitHub issue or submit a pull request. For more information, see [CONTRIBUTING.md](https://github.com/K-saif/pixpick/blob/main/CONTRIBUTING.md).
+We welcome contributions! Please open a GitHub issue or submit a pull request. For more information, see [Contribution Guidelines](https://github.com/K-saif/pixpick/blob/main/CONTRIBUTING.md).
