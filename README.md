@@ -20,8 +20,11 @@
 Every major CV framework needs coordinates before it can run.
 
 ```python
-regioncounter = RegionCounter(region=[120, 80, 640, 480])    # YOLO   — where does this region come from?
-predictor.predict(box=np.array([120, 80, 640, 480]))         # SAM2/SAM3   — same problem
+# YOLO 
+regioncounter = RegionCounter(region=[120, 80, 640, 480])    # where does this region come from?
+
+# SAM2/SAM3
+predictor.predict(box=np.array([120, 80, 640, 480]))         # same problem
 ```
 
 The standard workflow: open CVAT or Roboflow → grab coordinates → paste them back into code. Every. Single. Time.
