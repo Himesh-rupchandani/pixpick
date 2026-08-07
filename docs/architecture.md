@@ -3,20 +3,29 @@
 ## File structure
 
 ```
+docs/
+├── architecture.md             # How it's built and how to extend it
+├── CONTRIBUTING.md             # Contribution guidelines
+├── frameworks.md               # Framework integration (YOLO, SAM, etc.)
+├── getting-started.md          # Installation, first selection, controls
+├── index.md                    # Home page
+├── persistence.md              # Save, load, JSON schema
+├── roadmap.md                  # What's coming next
+└── selectors.md                # All properties and methods for Box and Polygon
 pixpick/
-├── core/                       # All properties and methods
-│   ├── box.py                  # Box, Multibox
-│   ├── line.py                 # Line
-│   └── polygon.py              # Polygon, Multipolygon
-├── selectors/
-│   ├── box_picker.py           # BoxSelector
-│   ├── line_picker.py          # LineSelector
-│   └── polygon_picker.py       # PolygonSelector
 ├── backends/
 │   ├── base.py                 # AbstractBackend — contract for all backends
 │   └── cv2_backend.py          # CV2Backend (OpenCV window)
-├── utils.py                    # load_image(), image_size()
-└── __init__.py                 # box(), polygon(), load() — public API
+├── core/                       
+│   ├── box.py                  # Box, Multibox
+│   ├── line.py                 # Line
+│   └── polygon.py              # Polygon, Multipolygon
+├── selectors/                  
+│   ├── box_picker.py           # BoxSelector
+│   ├── line_picker.py          # LineSelector
+│   └── polygon_picker.py       # PolygonSelector
+├── __init__.py                 # box(), polygon(), load() — public API
+└── utils.py                    # load_image(), image_size()
 ```
 
 ## How the layers relate
