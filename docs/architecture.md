@@ -69,8 +69,8 @@ A backend handles the UI — opening a window, capturing mouse input, and return
 | Backend | Class | Environment | Status |
 |---|---|---|---|
 | OpenCV window | `CV2Backend` | Local scripts | ✅ v0.1.0 |
-| Matplotlib | `NotebookBackend` | Jupyter / Colab | 🔜 v0.2.0 |
-| Gradio | `GradioBackend` | Headless / SSH | 🔜 v0.2.0 |
+| Matplotlib | `NotebookBackend` | Jupyter / Colab | 🔜 v0.3.0 |
+| Gradio | `GradioBackend` | Headless / SSH | 🔜 v0.3.0 |
 
 ## CV2Backend (default)
 
@@ -96,7 +96,7 @@ selector = BoxSelector(backend=CV2Backend())
 region   = selector.select("frame.jpg")
 ```
 
-Once `NotebookBackend` and `GradioBackend` land in v0.2, swapping is the same:
+Once `NotebookBackend` and `GradioBackend` land in v0.3, swapping is the same:
 
 ```python
 from pixpick.backends.notebook import NotebookBackend
