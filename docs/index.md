@@ -61,21 +61,32 @@ Every selection object carries all the formats you'll ever need.
 # ── Box ──────────────────────────────────────────────────────
 region = pixpick.box("frame.jpg")
 
-region.xyxy              # [x1, y1, x2, y2]            absolute pixels
-region.xywh              # [x, y, w, h]                absolute pixels
-region.norm_xywh         # [x, y, w, h]                0.0 – 1.0  ← YOLO label format
-region.center            # (cx, cy)
-region.area              # pixels²
+region.yolo_region       # coordinates in YOLO region format
+region.yolo_prompt       # coordinates in YOLOE visual prompt format
+region.sam               # coordinates in SAM box prompt format
+region.center            # center point of the box (cx, cy)
+region.area              # area of the box in pixels²
 
 
 # ── Polygon ───────────────────────────────────────────────────
 zone = pixpick.polygon("frame.jpg")
 
-zone.points              # [(x0,y0), (x1,y1), ...]     absolute pixels
-zone.as_numpy            # np.array shape (N, 2)
-zone.norm                # [(x0n,y0n), ...]             0.0 – 1.0
-zone.bbox                # → Box   tight bbox around the polygon
+zone.supervision         # Supervision PolygonZone object
+zone.yolo_region         # coordinates in YOLO region format
+zone.bbox                # tight bbox around the polygon
 zone.npoints             # int
+zone.norm                # normalized coordinates [(x0n,y0n), ...]  0.0 – 1.0
+
+
+# ── Line ─────────────────────────────────────────────────────
+line = pixpick.line("frame.jpg")
+
+line.center               # center point of the line (cx, cy)
+line.length               # length of the line
+line.start                # start point of the line (cx, cy)
+line.end                  # end point of the line (cx, cy)
+line.vertical             # True if vertical
+line.horizontal           # True if horizontal
 ```
 For more details, see [Selectors](selectors.md).
 
@@ -88,4 +99,5 @@ For more details, see [Selectors](selectors.md).
 | Ultralytics YOLOE — visual prompt | `Box` | `region.yolo_prompt` |
 | Ultralytics YOLO — region | `Box`/`Polygon` | `region.yolo_region` |
 | SAM / SAM2 / SAM3 — box prompt | `Box` | `region.sam` |
+|| Supervision PolygonZone — polygon | `Polygon` | `region.supervision` |
 | Any other format | `Box` / `Polygon` | `region.raw` |
