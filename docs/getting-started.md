@@ -28,7 +28,7 @@ A window opens on `image.jpg`. Drag a rectangle, release the mouse — done. The
 | Draw box | Left-click + drag |
 | Undo last box | Right-click |
 | Clear all boxes | `Z` or Backspace |
-| Confirm selection | `Enter` or `Space` |
+| Confirm selection | `Enter` |
 | Cancel | `Esc` |
 
 If you draw more than one box, `pixpick.box()` returns a `Multibox` that holds all selected coordinates.
@@ -39,7 +39,7 @@ If you draw more than one box, `pixpick.box()` returns a `Multibox` that holds a
 | Draw box | Left-click + drag |
 | Undo last box | Right-click |
 | Clear all boxes | `Z` or Backspace |
-| Confirm selection | `Enter` or `Space` |
+| Confirm selection | `Enter` |
 | Cancel | `Esc` |
 
 **Polygon selector**

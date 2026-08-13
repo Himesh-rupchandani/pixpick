@@ -64,7 +64,7 @@ class CV2Backend(BaseBackend):
                 self._boxes.clear()
                 continue
 
-            if key in (13, 32):
+            if key == 13:
                 if not self._boxes:
                     continue
 
@@ -163,7 +163,7 @@ class CV2Backend(BaseBackend):
                 self._mouse_pos = None
                 continue
 
-            if key in (13, 32):
+            if key == 13:
                 if len(self._line_points) != 2:
                     continue
 
