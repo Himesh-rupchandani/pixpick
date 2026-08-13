@@ -33,6 +33,15 @@ A window opens on `image.jpg`. Drag a rectangle, release the mouse — done. The
 
 If you draw more than one box, `pixpick.box()` returns a `Multibox` that holds all selected coordinates.
 
+**Multibox selector**
+| Action | Control |
+|---|---|
+| Draw box | Left-click + drag |
+| Undo last box | Right-click |
+| Clear all boxes | `Z` or Backspace/Delete |
+| Confirm selection | `Enter` or `Space` |
+| Cancel | `Esc` |
+
 **Polygon selector**
 
 | Action | Control |
