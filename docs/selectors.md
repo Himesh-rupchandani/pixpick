@@ -14,27 +14,26 @@ region = pixpick.box("video.mp4", frame=10)
 
 ### Properties
 
-```python
-region.xyxy             # [x1, y1, x2, y2]          absolute pixels
-region.xywh             # [x, y, w, h]               absolute pixels
-region.cxcywh           # [cx, cy, w, h]             absolute pixels
-region.norm             # [x1, y1, x2, y2]           0.0 – 1.0
-region.norm_xywh        # [x, y, w, h]               0.0 – 1.0  (YOLO label format)
-region.center           # (cx, cy)                   absolute pixels
-region.area             # int                         pixels²
-region.as_numpy         # np.array shape (4,)        int32
-region.image_width      # int
-region.image_height     # int
-```
+| Property | Description |
+|---|---|
+| `xyxy` | [x1, y1, x2, y2] absolute pixels |
+| `xywh` | [x, y, w, h] absolute pixels |
+| `cxcywh` | [cx, cy, w, h] absolute pixels |
+| `norm` | [x1, y1, x2, y2] 0.0 – 1.0 |
+| `norm_xywh` | [x, y, w, h] 0.0 – 1.0 (YOLO label format) |
+| `center` | (cx, cy) absolute pixels |
+| `area` | int pixels² |
+| `as_numpy` | np.array shape (4,) int32 |
+
 
 ### Framework properties
 
-```python
-region.yolo_region
-region.yolo_prompt
-region.sam
-region.raw         # all formats in one dict
-```
+| Property | Description |
+|---|---|
+| `yolo_region` | dict with keys: xywh, norm_xywh, class, confidence |
+| `yolo_prompt` | str prompt for LLMs |
+| `sam` | dict with keys: mask, bbox, area, confidence, point_coords, point_labels |
+| `raw` | dict with all formats in one place |
 
 ### Visualise
 
@@ -77,24 +76,24 @@ Minimum 3 points required before `Enter` confirms. Vertices are recorded in the 
 
 ### Properties
 
-```python
-zone.points             # [(x0,y0), (x1,y1), ...]   list of tuples, absolute pixels
-zone.as_numpy           # np.array shape (N, 2)      int32
-zone.norm               # [(x0n,y0n), ...]           0.0 – 1.0
-zone.norm_numpy         # np.array shape (N, 2)      float32
-zone.npoints            # int
-zone.bbox               # Box  — tight axis-aligned bbox around the polygon
-zone.image_width        # int
-zone.image_height       # int
-```
+| Property | Description |
+|---|---|
+| `points` | list of tuples, absolute pixels |
+| `as_numpy` | np.array shape (N, 2) int32 |
+| `norm` | list of tuples, 0.0 – 1.0 |
+| `norm_numpy` | np.array shape (N, 2) float32 |
+| `npoints` | int |
+| `bbox` | Box — tight axis-aligned bbox around the polygon |
+| `image_width` | int |
+| `image_height` | int |
 
 ### Framework properties
 
-```python
-zone.yolo_region
-zone.supervision
-zone.raw           # all formats in one dict
-```
+| Property | Description |
+|---|---|
+| `yolo_region` | dict with keys: xywh, norm_xywh, class, confidence |
+| `supervision` | dict with keys: points, polygon, bbox, area, confidence, point_coords, point_labels |
+| `raw` | dict with all formats in one place |
 
 ### Visualise
 
@@ -136,14 +135,15 @@ line = pixpick.line("image.jpg")
 
 ### Properties
 
-```python
-line.center               # center point of the line (cx, cy)
-line.length               # length of the line
-line.start                # start point of the line (cx, cy)
-line.end                  # end point of the line (cx, cy)
-line.vertical             # True if vertical
-line.horizontal           # True if horizontal
-```
+| Property | Description |
+|---|---|
+| `start` | (x1, y1) absolute pixels |
+| `end` | (x2, y2) absolute pixels |
+| `center` | (cx, cy) absolute pixels |
+| `length` | length of the line|
+| `vertical` | True if vertical |
+| `horizontal` | True if horizontal |
+
 
 ### Visualise
 
