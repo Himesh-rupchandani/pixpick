@@ -172,7 +172,6 @@ class CV2Backend(BaseBackend):
 
                 cv2.destroyWindow(title)
                 return self._lines
-
     # ------------------------------------------------------------------ #
     # Mouse callback                                                      #
     # ------------------------------------------------------------------ #
@@ -248,12 +247,10 @@ class CV2Backend(BaseBackend):
                 self._line_points.append(pos)
 
                 if len(self._line_points) == 2:
-                    self._lines.append(
-                        tuple(
-                            self._display_to_image_point(point)
-                            for point in self._line_points
-                        )
-                    )
+                    p1 = self._display_to_image_point(self._line_points[0])
+                    p2 = self._display_to_image_point(self._line_points[1])
+
+                    self._lines.append((p1, p2))
                     self._line_points.clear()
 
         elif event == cv2.EVENT_RBUTTONDOWN:
@@ -261,6 +258,8 @@ class CV2Backend(BaseBackend):
                 self._line_points.pop()
             elif self._lines:
                 self._lines.pop()
+
+
     # ------------------------------------------------------------------ #
     # Helpers                                                             #
     # ------------------------------------------------------------------ #
@@ -509,7 +508,6 @@ class CV2Backend(BaseBackend):
 
         return canvas
 
-
     def _draw_line(self, image: np.ndarray) -> np.ndarray:
         """Return a copy of image with completed and current lines drawn."""
 
@@ -517,7 +515,19 @@ class CV2Backend(BaseBackend):
 
         # Draw completed lines
         for p1, p2 in self._lines:
-            cv2.line(canvas, p1, p2, (0, 255, 0), 2)
+            start = self._image_to_display_point(p1)
+            end = self._image_to_display_point(p2)
+
+            cv2.circle(canvas, start, 4, (0, 255, 0), -1)
+            cv2.circle(canvas, end, 4, (0, 255, 0), -1)
+
+            cv2.line(
+                canvas,
+                start,
+                end,
+                (0, 255, 0),
+                2,
+            )
 
             label = f"{p1} to {p2}"
 
@@ -525,8 +535,8 @@ class CV2Backend(BaseBackend):
                 canvas,
                 label,
                 (
-                    min(p1[0], p2[0]),
-                    max(min(p1[1], p2[1]) - 8, 12),
+                    min(start[0], end[0]),
+                    max(min(start[1], end[1]) - 8, 12),
                 ),
                 cv2.FONT_HERSHEY_SIMPLEX,
                 0.5,
@@ -535,12 +545,15 @@ class CV2Backend(BaseBackend):
                 cv2.LINE_AA,
             )
 
-            cv2.circle(canvas, p1, 4, (0, 255, 0), -1)
-            cv2.circle(canvas, p2, 4, (0, 255, 0), -1)
-
-        # Draw currently selected point / rubber-band line
+        # Draw current line
         for point in self._line_points:
-            cv2.circle(canvas, point, 4, (0, 255, 0), -1)
+            cv2.circle(
+                canvas,
+                point,
+                4,
+                (0, 255, 0),
+                -1,
+            )
 
         if len(self._line_points) == 1 and self._mouse_pos is not None:
             cv2.line(
