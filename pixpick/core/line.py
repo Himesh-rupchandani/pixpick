@@ -179,3 +179,40 @@ class Line:
                 cv2.FONT_HERSHEY_SIMPLEX, 0.45, color, 1, cv2.LINE_AA,
             )
         return canvas
+
+
+class MultiLine:
+    """
+    Immutable result of a multi-line selection.
+
+    Attributes
+    ----------
+    lines : list[Line]
+        List of Line objects.
+    image_width, image_height : int
+        Dimensions of the source image — needed for normalisation.
+    """
+
+
+    lines: list[tuple[int, int]]
+    image_width: int
+    image_height: int
+
+    # ------------------------------------------------------------------ #
+    # Validation                                                           #
+    # ------------------------------------------------------------------ #
+
+    def __post_init__(self):
+        if len(self.lines) < 2:
+            raise ValueError(
+                f"MultiLine needs at least 2 lines, got {len(self.lines)}"
+            )
+        for line in self.lines:
+            for i, pt in enumerate(line.points):
+                x, y = pt
+                if not (0 <= x <= self.image_width and 0 <= y <= self.image_height):
+                    raise ValueError(
+                        f"Point {i} ({x},{y}) is outside image "
+                        f"({self.image_width}x{self.image_height})"
+                    )
+
