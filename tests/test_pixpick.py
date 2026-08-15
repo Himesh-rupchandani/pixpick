@@ -166,12 +166,6 @@ class TestBoxProperties:
         assert arr.dtype == np.int32
         assert arr.tolist() == [100, 50, 400, 300]
 
-
-# ======================================================================== #
-# Box — framework methods                                                   #
-# ======================================================================== #
-class TestBoxAdapters:
-
     def test_yolo_region(self, make_box):
         box = make_box()
         assert box.yolo_region == [
@@ -322,7 +316,6 @@ class TestMultiboxProperties:
 
     def test_cxcywh(self, make_multibox):
         multibox = make_multibox()
-
         assert multibox.cxcywh == [
             [250.0, 175.0, 300.0, 250.0],
             [650.0, 400.0, 300.0, 400.0],
@@ -330,14 +323,12 @@ class TestMultiboxProperties:
 
     def test_norm(self, make_multibox):
         multibox = make_multibox()
-
         norm = multibox.norm
         assert len(norm) == 2
         assert all(all(0 <= v <= 1 for v in box) for box in norm)
 
     def test_norm_xywh(self, make_multibox):
         multibox = make_multibox()
-
         norm = multibox.norm_xywh
         assert len(norm) == 2
 
@@ -357,27 +348,16 @@ class TestMultiboxProperties:
 
     def test_as_numpy(self, make_multibox):
         multibox = make_multibox()
-
         arr = multibox.as_numpy
         assert arr.shape == (2, 4)
         assert arr.dtype == np.int32
 
-
-
-# ======================================================================== #
-# Multibox — framework methods                                             #
-# ======================================================================== #
-
-class TestMultiboxAdapters:
-
     def test_yolo_region(self, make_multibox):
         multibox = make_multibox()
-
         assert len(multibox.yolo_region) == 2
 
     def test_yolo_prompt(self, make_multibox):
         multibox = make_multibox()
-
         np.testing.assert_array_equal(
             multibox.yolo_prompt,
             np.array([
@@ -388,7 +368,6 @@ class TestMultiboxAdapters:
 
     def test_sam(self, make_multibox):
         multibox = make_multibox()
-
         np.testing.assert_array_equal(
             multibox.sam,
             np.array([
@@ -399,7 +378,6 @@ class TestMultiboxAdapters:
 
     def test_raw_keys(self, make_multibox):
         multibox = make_multibox()
-
         raw = multibox.raw
         expected = {
             "xyxy",
@@ -409,7 +387,6 @@ class TestMultiboxAdapters:
             "normalized_xywh",
             "numpy",
         }
-
         assert expected.issubset(raw.keys())
 
 # ======================================================================== #
@@ -519,13 +496,6 @@ class TestPolygonProperties:
     def test_n_points(self, make_polygon):
         polygon = make_polygon()
         assert polygon.npoints == 4
-
-
-# ======================================================================== #
-# Polygon — framework methods                                               #
-# ======================================================================== #
-
-class TestPolygonAdapters:
 
     def test_to_supervision_key(self, make_polygon):
         polygon = make_polygon()
