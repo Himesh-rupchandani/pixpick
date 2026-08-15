@@ -2,7 +2,7 @@ from __future__ import annotations
 import numpy as np
 from pixpick.backends.base import BaseBackend
 from pixpick.backends.cv2_backend import CV2Backend
-from pixpick.core.line import Line
+from pixpick.core.line import Line, MultiLine
 from pixpick.utils import load_image, image_size, ImageSource
 
 
@@ -54,13 +54,18 @@ class LineSelector:
         image = load_image(source, frame=frame)
         w, h  = image_size(image)
 
-        raw = self.backend.select_line(image, title=title)
+        lines = self.backend.select_line(image, title=title)
 
-        if raw is None:
+        if lines is None:
             raise SelectionCancelled("Line selection was cancelled by the user.")
 
-        # raw is list of two points [(x1, y1), (x2, y2)]
-        return Line(points=raw, image_width=w, image_height=h)
+        if len(lines) == 1:
+            # lines is a list of two points [(x1, y1), (x2, y2)]
+            return Line(points=lines, image_width=w, image_height=h)
+
+        else:
+            # lines is a list of multiple points [(x1, y1), (x2, y2), ...]
+            return MultiLine(lines=lines, image_width=w, image_height=h)
 
 
 class SelectionCancelled(Exception):

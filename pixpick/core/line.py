@@ -180,7 +180,7 @@ class Line:
             )
         return canvas
 
-
+@dataclass
 class MultiLine:
     """
     Immutable result of a multi-line selection.
