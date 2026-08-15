@@ -601,6 +601,11 @@ class TestPolygonVisualize:
 
 
 # ======================================================================== #
+# Polygon — construction and properties                         #
+# ======================================================================== #
+# need to fix the polygon npoint for multipolygon then  only construction csan be implemented same as polygon
+
+# ======================================================================== #
 # Multipolygon — properties                                                     #
 # ======================================================================== #
 class TestMultiPolygonProperties:
