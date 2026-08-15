@@ -166,12 +166,6 @@ class TestBoxProperties:
         assert arr.dtype == np.int32
         assert arr.tolist() == [100, 50, 400, 300]
 
-
-# ======================================================================== #
-# Box — framework methods                                                   #
-# ======================================================================== #
-class TestBoxAdapters:
-
     def test_yolo_region(self, make_box):
         box = make_box()
         assert box.yolo_region == [
@@ -362,22 +356,12 @@ class TestMultiboxProperties:
         assert arr.shape == (2, 4)
         assert arr.dtype == np.int32
 
-
-
-# ======================================================================== #
-# Multibox — framework methods                                             #
-# ======================================================================== #
-
-class TestMultiboxAdapters:
-
     def test_yolo_region(self, make_multibox):
         multibox = make_multibox()
-
         assert len(multibox.yolo_region) == 2
 
     def test_yolo_prompt(self, make_multibox):
         multibox = make_multibox()
-
         np.testing.assert_array_equal(
             multibox.yolo_prompt,
             np.array([
@@ -519,13 +503,6 @@ class TestPolygonProperties:
     def test_n_points(self, make_polygon):
         polygon = make_polygon()
         assert polygon.npoints == 4
-
-
-# ======================================================================== #
-# Polygon — framework methods                                               #
-# ======================================================================== #
-
-class TestPolygonAdapters:
 
     def test_to_supervision_key(self, make_polygon):
         polygon = make_polygon()
