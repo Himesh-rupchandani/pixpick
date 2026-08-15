@@ -603,10 +603,10 @@ class TestPolygonVisualize:
 # ======================================================================== #
 # Polygon — construction and properties                         #
 # ======================================================================== #
-# need to fix the polygon npoint for multipolygon then  only construction csan be implemented same as polygon
+# need to fix the polygon npoint for multipolygon then  only construction can be implemented same as polygon
 
 # ======================================================================== #
-# Multipolygon — properties                                                     #
+# MultiPolygon — properties                                                     #
 # ======================================================================== #
 class TestMultiPolygonProperties:
 
@@ -661,6 +661,17 @@ class TestMultiPolygonProperties:
 
         for item in result:
             assert "polygon" in item
+
+# ======================================================================== #
+# MultiPolygon — persistence                                                     #
+# ======================================================================== #
+# after fxing the multipolygon and multibox issue #64, persistence can be implemented same as polygon
+
+
+# ======================================================================== #
+# MultiPolygon — visualize                                                       #
+# ======================================================================== #
+# after fxing the multipolygon and multibox issue #64, visualize can be implemented same as polygon
 
 # ======================================================================== #
 # pixpick.load() dispatcher                                                 #
