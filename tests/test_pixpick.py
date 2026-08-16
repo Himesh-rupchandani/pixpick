@@ -19,7 +19,7 @@ import numpy as np
 import pytest
 
 from pixpick.core.box import Box, Multibox
-from pixpick.core.polygon import Polygon
+from pixpick.core.polygon import Polygon, MultiPolygon
 from pixpick.core.line import Line
 from pixpick import load
 
@@ -69,6 +69,29 @@ def make_polygon():
         defaults.update(kwargs)
         return Polygon(**defaults)
     return _make_polygon
+
+@pytest.fixture
+def make_multipolygon():
+    def _make_multipolygon(**kwargs):
+        defaults = dict(
+            polygons=[
+                Polygon(
+                    points=[(100, 50), (400, 50), (400, 300), (100, 300)],
+                    image_width=1920,
+                    image_height=1080,
+                ),
+                Polygon(
+                    points=[(500, 200), (800, 200), (800, 600), (500, 600)],
+                    image_width=1920,
+                    image_height=1080,
+                ),
+            ],
+            image_width=1920,
+            image_height=1080,
+        )
+        defaults.update(kwargs)
+        return MultiPolygon(**defaults)
+    return _make_multipolygon
 
 @pytest.fixture
 def line():
@@ -165,12 +188,6 @@ class TestBoxProperties:
         assert arr.shape == (4,)
         assert arr.dtype == np.int32
         assert arr.tolist() == [100, 50, 400, 300]
-
-
-# ======================================================================== #
-# Box — framework methods                                                   #
-# ======================================================================== #
-class TestBoxAdapters:
 
     def test_yolo_region(self, make_box):
         box = make_box()
@@ -322,7 +339,6 @@ class TestMultiboxProperties:
 
     def test_cxcywh(self, make_multibox):
         multibox = make_multibox()
-
         assert multibox.cxcywh == [
             [250.0, 175.0, 300.0, 250.0],
             [650.0, 400.0, 300.0, 400.0],
@@ -330,14 +346,12 @@ class TestMultiboxProperties:
 
     def test_norm(self, make_multibox):
         multibox = make_multibox()
-
         norm = multibox.norm
         assert len(norm) == 2
         assert all(all(0 <= v <= 1 for v in box) for box in norm)
 
     def test_norm_xywh(self, make_multibox):
         multibox = make_multibox()
-
         norm = multibox.norm_xywh
         assert len(norm) == 2
 
@@ -357,27 +371,16 @@ class TestMultiboxProperties:
 
     def test_as_numpy(self, make_multibox):
         multibox = make_multibox()
-
         arr = multibox.as_numpy
         assert arr.shape == (2, 4)
         assert arr.dtype == np.int32
 
-
-
-# ======================================================================== #
-# Multibox — framework methods                                             #
-# ======================================================================== #
-
-class TestMultiboxAdapters:
-
     def test_yolo_region(self, make_multibox):
         multibox = make_multibox()
-
         assert len(multibox.yolo_region) == 2
 
     def test_yolo_prompt(self, make_multibox):
         multibox = make_multibox()
-
         np.testing.assert_array_equal(
             multibox.yolo_prompt,
             np.array([
@@ -388,7 +391,6 @@ class TestMultiboxAdapters:
 
     def test_sam(self, make_multibox):
         multibox = make_multibox()
-
         np.testing.assert_array_equal(
             multibox.sam,
             np.array([
@@ -399,7 +401,6 @@ class TestMultiboxAdapters:
 
     def test_raw_keys(self, make_multibox):
         multibox = make_multibox()
-
         raw = multibox.raw
         expected = {
             "xyxy",
@@ -409,7 +410,6 @@ class TestMultiboxAdapters:
             "normalized_xywh",
             "numpy",
         }
-
         assert expected.issubset(raw.keys())
 
 # ======================================================================== #
@@ -456,7 +456,7 @@ class TestMultiboxVisualize:
 
 
 # ======================================================================== #
-# Polygon — construction and validation                                     #
+# Polygon — construction and properties                         #
 # ======================================================================== #
 
 class TestPolygonConstruction:
@@ -482,7 +482,7 @@ class TestPolygonConstruction:
 
 
 # ======================================================================== #
-# Polygon — properties                                                      #
+# Polygon — properties                                                     #
 # ======================================================================== #
 
 class TestPolygonProperties:
@@ -519,13 +519,6 @@ class TestPolygonProperties:
     def test_n_points(self, make_polygon):
         polygon = make_polygon()
         assert polygon.npoints == 4
-
-
-# ======================================================================== #
-# Polygon — framework methods                                               #
-# ======================================================================== #
-
-class TestPolygonAdapters:
 
     def test_to_supervision_key(self, make_polygon):
         polygon = make_polygon()
@@ -606,6 +599,79 @@ class TestPolygonVisualize:
         polygon.visualize(sample_image)
         np.testing.assert_array_equal(sample_image, original)
 
+
+# ======================================================================== #
+# Polygon — construction and properties                         #
+# ======================================================================== #
+# need to fix the polygon npoint for multipolygon then  only construction can be implemented same as polygon
+
+# ======================================================================== #
+# MultiPolygon — properties                                                     #
+# ======================================================================== #
+class TestMultiPolygonProperties:
+
+    def test_as_numpy_shape(self, make_multipolygon):
+        multipolygon = make_multipolygon()
+
+        arr = multipolygon.as_numpy
+
+        assert isinstance(arr, list)
+        assert len(arr) == 2
+        assert arr[0].shape == (4, 2)
+        assert arr[1].shape == (4, 2)
+        assert arr[0].dtype == np.int32
+        assert arr[1].dtype == np.int32
+
+    def test_norm_range(self, make_multipolygon):
+        multipolygon = make_multipolygon()
+
+        for polygon_norm in multipolygon.norm:
+            for x, y in polygon_norm:
+                assert 0.0 <= x <= 1.0
+                assert 0.0 <= y <= 1.0
+
+    def test_norm_numpy(self, make_multipolygon):
+        multipolygon = make_multipolygon()
+
+        result = multipolygon.norm_numpy
+
+        assert isinstance(result, list)
+        assert len(result) == 2
+        assert result[0].shape == (4, 2)
+        assert result[1].shape == (4, 2)
+        assert result[0].dtype == np.float32
+        assert result[1].dtype == np.float32
+
+    def test_bbox(self, make_multipolygon):
+        multipolygon = make_multipolygon()
+
+        assert multipolygon.box == [
+            [100, 50, 400, 300],
+            [500, 200, 800, 600],
+        ]
+
+
+    def test_to_supervision(self, make_multipolygon):
+        multipolygon = make_multipolygon()
+
+        result = multipolygon.supervision
+
+        assert isinstance(result, list)
+        assert len(result) == 2
+
+        for item in result:
+            assert "polygon" in item
+
+# ======================================================================== #
+# MultiPolygon — persistence                                                     #
+# ======================================================================== #
+# after fxing the multipolygon and multibox issue #64, persistence can be implemented same as polygon
+
+
+# ======================================================================== #
+# MultiPolygon — visualize                                                       #
+# ======================================================================== #
+# after fxing the multipolygon and multibox issue #64, visualize can be implemented same as polygon
 
 # ======================================================================== #
 # pixpick.load() dispatcher                                                 #
