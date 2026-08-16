@@ -311,3 +311,83 @@ class MultiLine:
             "end":               self.end,
             "vector":            self.vector,
         }
+
+
+    # ------------------------------------------------------------------ #
+    # Persistence
+    # ------------------------------------------------------------------ #
+
+    def save(self, path: str | Path) -> None:
+        """Serialise to JSON."""
+        data = {
+            "type": "line",
+            "image_size": [self.image_width, self.image_height],
+            "coordinates": {
+                "lines": self.lines,
+                "normalized": self.norm,
+            },
+        }
+        Path(path).write_text(json.dumps(data, indent=2))
+
+
+    @classmethod
+    def load(cls, path: str | Path) -> "Line":
+        """Reconstruct from a saved JSON file."""
+        data = json.loads(Path(path).read_text())
+
+        if data["type"] != "line":
+            raise ValueError(f"Expected type 'line', got '{data['type']}'")
+
+        w, h = data["image_size"]
+
+        lines = [
+            [tuple(point) for point in line]
+            for line in data["coordinates"]["lines"]
+        ]
+
+        return cls(
+            lines=lines,
+            image_width=w,
+            image_height=h,
+        )
+
+
+    # ------------------------------------------------------------------ #
+    # Visualisation
+    # ------------------------------------------------------------------ #
+
+    def visualize(
+        self,
+        image: np.ndarray,
+        color: tuple = (0, 255, 0),
+        thickness: int = 2,
+    ) -> np.ndarray:
+        """Draw all lines on a copy of the image."""
+        canvas = image.copy()
+
+        for line_idx, line in enumerate(self.lines):
+            pts = np.asarray(line, dtype=np.int32).reshape((-1, 1, 2))
+
+            cv2.polylines(
+                canvas,
+                [pts],
+                isClosed=False,
+                color=color,
+                thickness=thickness,
+            )
+
+            for point_idx, (x, y) in enumerate(line):
+                cv2.circle(canvas, (x, y), 4, color, -1)
+
+                cv2.putText(
+                    canvas,
+                    f"{line_idx}:{point_idx}",
+                    (x + 5, y - 5),
+                    cv2.FONT_HERSHEY_SIMPLEX,
+                    0.45,
+                    color,
+                    1,
+                    cv2.LINE_AA,
+                )
+
+        return canvas
