@@ -61,7 +61,7 @@ class LineSelector:
 
         if len(lines) == 1:
             # lines is a list of two points [(x1, y1), (x2, y2)]
-            return Line(points=lines, image_width=w, image_height=h)
+            return Line(points=lines[0], image_width=w, image_height=h)
 
         else:
             # lines is a list of multiple points [(x1, y1), (x2, y2), ...]
