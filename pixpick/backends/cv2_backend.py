@@ -136,13 +136,15 @@ class CV2Backend(BaseBackend):
         self,
         image: np.ndarray,
         title: str = (
-            "pixpick | line | "
-            "LMB=select endpoints  Enter=confirm  Z=reset  Esc=cancel"
+            "pixpick | lines | "
+            "LMB=select endpoints  RMB=undo  Enter=confirm  Z=reset  Esc=cancel"
         ),
-    ) -> tuple[tuple[int, int], tuple[int, int]] | None:
+    ) -> list[tuple[tuple[int, int], tuple[int, int]]] | None:
 
+        self._lines = []
         self._line_points = []
         self._mouse_pos = None
+
         display_image = self._prepare_display_image(image)
 
         cv2.namedWindow(title, cv2.WINDOW_AUTOSIZE)
@@ -159,19 +161,18 @@ class CV2Backend(BaseBackend):
                 return None
 
             if key in (ord("z"), 8, 127):
+                self._lines.clear()
                 self._line_points.clear()
                 self._mouse_pos = None
                 continue
+
 
             if key == 13:
                 if len(self._line_points) != 2:
                     continue
 
                 cv2.destroyWindow(title)
-                return tuple(
-                    self._display_to_image_point(point) for point in self._line_points
-                )
-
+                return self._lines
     # ------------------------------------------------------------------ #
     # Mouse callback                                                      #
     # ------------------------------------------------------------------ #
@@ -246,9 +247,19 @@ class CV2Backend(BaseBackend):
             if len(self._line_points) < 2:
                 self._line_points.append(pos)
 
+                if len(self._line_points) == 2:
+                    p1 = self._display_to_image_point(self._line_points[0])
+                    p2 = self._display_to_image_point(self._line_points[1])
+
+                    self._lines.append((p1, p2))
+                    self._line_points.clear()
+
         elif event == cv2.EVENT_RBUTTONDOWN:
             if self._line_points:
                 self._line_points.pop()
+            elif self._lines:
+                self._lines.pop()
+
 
     # ------------------------------------------------------------------ #
     # Helpers                                                             #
@@ -499,41 +510,59 @@ class CV2Backend(BaseBackend):
         return canvas
 
     def _draw_line(self, image: np.ndarray) -> np.ndarray:
-        """Return a copy of image with the current line drawn."""
+        """Return a copy of image with completed and current lines drawn."""
 
         canvas = image.copy()
 
-        line_points = self._line_points
-        mouse_pos = self._mouse_pos
+        # Draw completed lines
+        for p1, p2 in self._lines:
+            start = self._image_to_display_point(p1)
+            end = self._image_to_display_point(p2)
 
-        for point in line_points:
-            cv2.circle(canvas, point, 4, (0, 255, 0), -1)
+            cv2.circle(canvas, start, 4, (0, 255, 0), -1)
+            cv2.circle(canvas, end, 4, (0, 255, 0), -1)
 
-        if len(line_points) == 1 and mouse_pos is not None:
             cv2.line(
                 canvas,
-                line_points[0],
-                mouse_pos,
+                start,
+                end,
                 (0, 255, 0),
                 2,
             )
-
-        elif len(line_points) == 2:
-            p1, p2 = line_points
-
-            cv2.line(canvas, p1, p2, (0, 255, 0), 2)
 
             label = f"{p1} to {p2}"
 
             cv2.putText(
                 canvas,
                 label,
-                (min(p1[0], p2[0]), max(min(p1[1], p2[1]) - 8, 12)),
+                (
+                    min(start[0], end[0]),
+                    max(min(start[1], end[1]) - 8, 12),
+                ),
                 cv2.FONT_HERSHEY_SIMPLEX,
                 0.5,
                 (0, 255, 0),
                 1,
                 cv2.LINE_AA,
+            )
+
+        # Draw current line
+        for point in self._line_points:
+            cv2.circle(
+                canvas,
+                point,
+                4,
+                (0, 255, 0),
+                -1,
+            )
+
+        if len(self._line_points) == 1 and self._mouse_pos is not None:
+            cv2.line(
+                canvas,
+                self._line_points[0],
+                self._mouse_pos,
+                (0, 255, 0),
+                2,
             )
 
         return canvas

@@ -179,3 +179,215 @@ class Line:
                 cv2.FONT_HERSHEY_SIMPLEX, 0.45, color, 1, cv2.LINE_AA,
             )
         return canvas
+
+@dataclass
+class MultiLine:
+    """
+    Immutable result of a multi-line selection.
+
+    Attributes
+    ----------
+    lines : list[Line]
+        List of Line objects.
+    image_width, image_height : int
+        Dimensions of the source image — needed for normalisation.
+    """
+
+
+    lines: list[tuple[int, int]]
+    image_width: int
+    image_height: int
+
+    # ------------------------------------------------------------------ #
+    # Validation                                                           #
+    # ------------------------------------------------------------------ #
+
+    def __post_init__(self):
+        if len(self.lines) < 2:
+            raise ValueError(
+                f"MultiLine needs at least 2 lines, got {len(self.lines)}"
+            )
+        for line in self.lines:
+            for i, pt in enumerate(line):
+                x, y = pt
+                if not (0 <= x <= self.image_width and 0 <= y <= self.image_height):
+                    raise ValueError(
+                        f"Point {i} ({x},{y}) is outside image "
+                        f"({self.image_width}x{self.image_height})"
+                    )
+
+
+    # ------------------------------------------------------------------ #
+    # Core format properties                                               #
+    # ------------------------------------------------------------------ #
+
+    @property
+    def as_numpy(self) -> np.ndarray:
+        """Shape (N, 2, 2) int32 array — [[[x1,y1], [x2,y2]], ...]."""
+        return np.array(self.lines, dtype=np.int32)
+
+    @property
+    def norm(self) -> list[tuple[float, float]]:
+        """Points normalised to [0, 1]. for all lines."""
+        return [[
+            (x / self.image_width, y / self.image_height)
+            for x, y in line
+        ] for line in self.lines]
+
+    @property
+    def norm_numpy(self) -> np.ndarray:
+        """Shape (N, 2, 2) float32 array of normalised points."""
+        return np.array(self.norm, dtype=np.float32)
+
+    @property
+    def center(self) -> list[tuple[int, int]]:
+        """Center point of each line in absolute pixels."""
+        return [
+            (
+                (x1 + x2) // 2,
+                (y1 + y2) // 2,
+            )
+            for (x1, y1), (x2, y2) in self.lines
+        ]
+    
+    @property
+    def length(self) -> list[float]:
+        """Length of each line in pixels."""
+        return [
+            ((x2 - x1) ** 2 + (y2 - y1) ** 2) ** 0.5
+            for (x1, y1), (x2, y2) in self.lines
+        ]
+
+    @property
+    def start(self) -> list[tuple[int, int]]:
+        """First point of each line."""
+        return [line[0] for line in self.lines]
+
+    @property
+    def end(self) -> list[tuple[int, int]]:
+        """Last point of each line."""
+        return [line[1] for line in self.lines]
+
+    @property
+    def vector(self) -> list[tuple[float, float]]:
+        return [
+            (x2 - x1, y2 - y1)
+            for (x1, y1), (x2, y2) in self.lines
+        ]
+
+    @property
+    def horizontal(self) -> list[list[tuple[int, int]]]:
+        """Return new lines with the same lengths, aligned horizontally."""
+        return [
+            [
+                (int(cx - length / 2), cy),
+                (int(cx + length / 2), cy),
+            ]
+            for (cx, cy), length in zip(self.center, self.length)
+        ]
+
+
+    @property
+    def vertical(self) -> list[list[tuple[int, int]]]:
+        """Return new lines with the same lengths, aligned vertically."""
+        return [
+            [
+                (cx, int(cy - length / 2)),
+                (cx, int(cy + length / 2)),
+            ]
+            for (cx, cy), length in zip(self.center, self.length)
+        ]
+    
+    @property
+    def raw(self) -> dict:
+        """All formats at once."""
+        return {
+            "numpy":             self.as_numpy.tolist(),
+            "normalized":        self.norm,
+            "normalized_numpy":  self.norm_numpy.tolist(),
+            "center":            self.center,
+            "length":            self.length,
+            "start":             self.start,
+            "end":               self.end,
+            "vector":            self.vector,
+        }
+
+
+    # ------------------------------------------------------------------ #
+    # Persistence
+    # ------------------------------------------------------------------ #
+
+    def save(self, path: str | Path) -> None:
+        """Serialise to JSON."""
+        data = {
+            "type": "line",
+            "image_size": [self.image_width, self.image_height],
+            "coordinates": {
+                "lines": self.lines,
+                "normalized": self.norm,
+            },
+        }
+        Path(path).write_text(json.dumps(data, indent=2))
+
+
+    @classmethod
+    def load(cls, path: str | Path) -> "Line":
+        """Reconstruct from a saved JSON file."""
+        data = json.loads(Path(path).read_text())
+
+        if data["type"] != "line":
+            raise ValueError(f"Expected type 'line', got '{data['type']}'")
+
+        w, h = data["image_size"]
+
+        lines = [
+            [tuple(point) for point in line]
+            for line in data["coordinates"]["lines"]
+        ]
+
+        return cls(
+            lines=lines,
+            image_width=w,
+            image_height=h,
+        )
+
+
+    # ------------------------------------------------------------------ #
+    # Visualisation
+    # ------------------------------------------------------------------ #
+
+    def visualize(
+        self,
+        image: np.ndarray,
+        color: tuple = (0, 255, 0),
+        thickness: int = 2,
+    ) -> np.ndarray:
+        """Draw all lines on a copy of the image."""
+        canvas = image.copy()
+
+        for line_idx, line in enumerate(self.lines):
+            pts = np.asarray(line, dtype=np.int32).reshape((-1, 1, 2))
+
+            cv2.polylines(
+                canvas,
+                [pts],
+                isClosed=False,
+                color=color,
+                thickness=thickness,
+            )
+
+            for point_idx, (x, y) in enumerate(line):
+                cv2.circle(canvas, (x, y), 4, color, -1)
+
+                cv2.putText(
+                    canvas,
+                    f"{line_idx}:{point_idx}",
+                    (x + 5, y - 5),
+                    cv2.FONT_HERSHEY_SIMPLEX,
+                    0.45,
+                    color,
+                    1,
+                    cv2.LINE_AA,
+                )
+
+        return canvas
