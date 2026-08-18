@@ -215,9 +215,9 @@ class MultiPolygon:
         return [polygon.bbox for polygon in self.polygons]
     
     @property
-    def npoints(self) -> list[list[tuple[int, int]]]:
-        """List of polygon point lists in absolute pixels."""
-        return [polygon.points for polygon in self.polygons]
+    def npoints(self) -> list[int]:
+        """List of length of polygon points."""
+        return [len(polygon.points) for polygon in self.polygons]
 
     @property
     def yolo_region(self) -> list[list[tuple[int, int]]]:
