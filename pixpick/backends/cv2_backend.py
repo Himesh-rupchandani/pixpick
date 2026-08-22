@@ -173,6 +173,46 @@ class CV2Backend(BaseBackend):
 
                 cv2.destroyWindow(title)
                 return self._lines
+
+    def select_point(
+        self,
+        image: np.ndarray,
+        title: str = (
+            "pixpick | points | "
+            "LMB=select point  RMB=undo  Enter=confirm  Z=reset  Esc=cancel"
+        ),
+    ) -> list[tuple[int, int]] | None:
+
+        self._points = []
+        display_image = self._prepare_display_image(image)
+
+        cv2.namedWindow(title, cv2.WINDOW_AUTOSIZE)
+        cv2.setMouseCallback(title, self._polygon_callback)
+
+        while True:
+            canvas = self._draw_polygon(display_image)
+            cv2.imshow(title, canvas)
+
+            key = cv2.waitKey(20) & 0xFF
+
+            if key == 27:
+                cv2.destroyWindow(title)
+                return None
+
+            if key in (ord("z"), 8, 127):
+                self._points.clear()
+                continue
+
+            if key == 13:
+                if not self._points:
+                    continue
+
+                cv2.destroyWindow(title)
+                return [
+                    self._display_to_image_point(point)
+                    for point in self._points
+                ]
+                
     # ------------------------------------------------------------------ #
     # Mouse callback                                                      #
     # ------------------------------------------------------------------ #
