@@ -159,7 +159,17 @@ line.save("line.json")
 line = pixpick.load("line.json")   # or Line.load("line.json")
 ```
 
+### Multi-line results
+
+```python
+lines = pixpick.line("frame.jpg")
+lines.start          # [(x1,y1), (x1,y1), ...]
+lines.end            # [(x2,y2), (x2,y2), ...]
+lines.length         # [length1, length2, ...]
+lines.vertical       # [True, False, ...]
+```
 ---
+
 
 ## Coming in future releases
 
