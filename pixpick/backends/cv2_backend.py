@@ -212,7 +212,7 @@ class CV2Backend(BaseBackend):
                     self._display_to_image_point(point)
                     for point in self._points
                 ]
-                
+
     # ------------------------------------------------------------------ #
     # Mouse callback                                                      #
     # ------------------------------------------------------------------ #
@@ -299,6 +299,18 @@ class CV2Backend(BaseBackend):
                 self._line_points.pop()
             elif self._lines:
                 self._lines.pop()
+
+    def _point_callback(
+        self,
+        event: int,
+        x: int,
+        y: int,
+        flags: int,
+        param,
+    ) -> None:
+
+        if event == cv2.EVENT_LBUTTONDOWN:
+            self._points.append((x, y))
 
 
     # ------------------------------------------------------------------ #
@@ -603,6 +615,22 @@ class CV2Backend(BaseBackend):
                 self._mouse_pos,
                 (0, 255, 0),
                 2,
+            )
+
+        return canvas
+
+    def _draw_point(self, image: np.ndarray) -> np.ndarray:
+        """Return a copy of image with completed and current points drawn."""
+
+        canvas = image.copy()
+
+        for point in self._points:
+            cv2.circle(
+                canvas,
+                point,
+                4,
+                (0, 255, 255),
+                -1,
             )
 
         return canvas
