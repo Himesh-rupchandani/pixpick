@@ -50,7 +50,7 @@ class PointSelector:
         image = load_image(source, frame=frame)
         w, h  = image_size(image)
 
-        points = self.backend.select_polygon(image, title=title)
+        points = self.backend.select_point(image, title=title)
 
         if points is None:
             raise SelectionCancelled("Point selection was cancelled by the user.")

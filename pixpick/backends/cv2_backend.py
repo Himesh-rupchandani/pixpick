@@ -187,10 +187,10 @@ class CV2Backend(BaseBackend):
         display_image = self._prepare_display_image(image)
 
         cv2.namedWindow(title, cv2.WINDOW_AUTOSIZE)
-        cv2.setMouseCallback(title, self._polygon_callback)
+        cv2.setMouseCallback(title, self._point_callback)
 
         while True:
-            canvas = self._draw_polygon(display_image)
+            canvas = self._draw_point(display_image)
             cv2.imshow(title, canvas)
 
             key = cv2.waitKey(20) & 0xFF
