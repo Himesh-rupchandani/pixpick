@@ -166,6 +166,7 @@ __all__ = [
     "point",
     "load",
     "Box",
+    "Multibox",
     "Polygon",
     "MultiPolygon",
     "Line",

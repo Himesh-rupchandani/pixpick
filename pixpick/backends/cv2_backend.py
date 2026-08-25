@@ -628,8 +628,8 @@ class CV2Backend(BaseBackend):
             cv2.circle(
                 canvas,
                 point,
-                4,
-                (0, 255, 255),
+                6,
+                (0, 0, 255),
                 -1,
             )
 
