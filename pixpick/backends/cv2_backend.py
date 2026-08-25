@@ -173,6 +173,46 @@ class CV2Backend(BaseBackend):
 
                 cv2.destroyWindow(title)
                 return self._lines
+
+    def select_point(
+        self,
+        image: np.ndarray,
+        title: str = (
+            "pixpick | points | "
+            "LMB=select point  RMB=undo  Enter=confirm  Z=reset  Esc=cancel"
+        ),
+    ) -> list[tuple[int, int]] | None:
+
+        self._points = []
+        display_image = self._prepare_display_image(image)
+
+        cv2.namedWindow(title, cv2.WINDOW_AUTOSIZE)
+        cv2.setMouseCallback(title, self._point_callback)
+
+        while True:
+            canvas = self._draw_point(display_image)
+            cv2.imshow(title, canvas)
+
+            key = cv2.waitKey(20) & 0xFF
+
+            if key == 27:
+                cv2.destroyWindow(title)
+                return None
+
+            if key in (ord("z"), 8, 127):
+                self._points.clear()
+                continue
+
+            if key == 13:
+                if not self._points:
+                    continue
+
+                cv2.destroyWindow(title)
+                return [
+                    self._display_to_image_point(point)
+                    for point in self._points
+                ]
+
     # ------------------------------------------------------------------ #
     # Mouse callback                                                      #
     # ------------------------------------------------------------------ #
@@ -259,6 +299,18 @@ class CV2Backend(BaseBackend):
                 self._line_points.pop()
             elif self._lines:
                 self._lines.pop()
+
+    def _point_callback(
+        self,
+        event: int,
+        x: int,
+        y: int,
+        flags: int,
+        param,
+    ) -> None:
+
+        if event == cv2.EVENT_LBUTTONDOWN:
+            self._points.append((x, y))
 
 
     # ------------------------------------------------------------------ #
@@ -563,6 +615,22 @@ class CV2Backend(BaseBackend):
                 self._mouse_pos,
                 (0, 255, 0),
                 2,
+            )
+
+        return canvas
+
+    def _draw_point(self, image: np.ndarray) -> np.ndarray:
+        """Return a copy of image with completed and current points drawn."""
+
+        canvas = image.copy()
+
+        for point in self._points:
+            cv2.circle(
+                canvas,
+                point,
+                6,
+                (0, 0, 255),
+                -1,
             )
 
         return canvas

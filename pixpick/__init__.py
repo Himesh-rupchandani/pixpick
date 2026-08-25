@@ -26,9 +26,11 @@ from __future__ import annotations
 from pixpick.selectors.box_picker import BoxSelector
 from pixpick.selectors.polygon_picker import PolygonSelector, SelectionCancelled
 from pixpick.selectors.line_picker import LineSelector
+from pixpick.selectors.point_picker import PointSelector
 from pixpick.core.box import Box, Multibox
 from pixpick.core.polygon import Polygon, MultiPolygon
 from pixpick.core.line import Line
+from pixpick.core.point import Point
 from pixpick.utils import ImageSource
 
 
@@ -108,6 +110,31 @@ def line(source: ImageSource, title: str = "pixpick", frame: int = 0) -> Line:
     """
     return LineSelector().select(source, title=title, frame=frame)
 
+def point(source: ImageSource, title: str = "pixpick", frame: int = 0) -> list[tuple[int, int]]:
+    """
+    Open an interactive window on `source`, let the user click points,
+    and return a list of (x, y) coordinates.
+
+    Parameters
+    ----------
+    source : str | Path | np.ndarray
+        Image file path or BGR numpy array.
+    title : str
+        Window title shown to the user.
+    frame : int
+        0-based frame number to load when source is a video.
+
+    Returns
+    -------
+    list[tuple[int, int]]
+        A list of (x, y) coordinates representing the selected points.
+
+    Raises
+    ------
+    SelectionCancelled
+        If the user pressed Esc or closed the window.
+    """
+    return PointSelector().select(source, title=title, frame=frame)
 
 def load(path: str) -> Box | Multibox | Polygon | MultiPolygon | Line:
     """
@@ -135,15 +162,17 @@ def load(path: str) -> Box | Multibox | Polygon | MultiPolygon | Line:
 __all__ = [
     "box",
     "polygon",
-
     "line",
+    "point",
     "load",
     "Box",
+    "Multibox",
     "Polygon",
     "MultiPolygon",
     "Line",
     "BoxSelector",
     "PolygonSelector",
     "LineSelector",
+    "PointSelector",
     "SelectionCancelled",
 ]
