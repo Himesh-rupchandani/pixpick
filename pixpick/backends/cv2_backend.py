@@ -167,7 +167,7 @@ class CV2Backend(BaseBackend):
                 continue
 
 
-            if key == 13:
+            if key in (13, 10):
                 if not self._lines or self._line_points:
                     continue
 
