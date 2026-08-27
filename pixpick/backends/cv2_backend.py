@@ -167,12 +167,13 @@ class CV2Backend(BaseBackend):
                 continue
 
 
-            if key == 13:
-                if len(self._line_points) != 2:
+            if key in (13, 10):
+                confirmed = self._commit_line_on_enter()
+                if confirmed is None:
                     continue
 
                 cv2.destroyWindow(title)
-                return self._lines
+                return confirmed
 
     def select_point(
         self,
@@ -316,6 +317,24 @@ class CV2Backend(BaseBackend):
     # ------------------------------------------------------------------ #
     # Helpers                                                             #
     # ------------------------------------------------------------------ #
+
+    def _commit_line_on_enter(self):
+
+        """Return finished lines when Enter should close the window.
+        The mouse callback appends a completed pair to ``_lines`` and then
+        clears ``_line_points``. Confirming only when ``len(_line_points) == 2``
+        therefore never succeeds after a normal two-click draw. See #72.
+        """
+        if len(self._line_points) == 2:
+            p1 = self._display_to_image_point(self._line_points[0])
+            p2 = self._display_to_image_point(self._line_points[1])
+            self._lines.append((p1, p2))
+            self._line_points.clear()
+
+        if not self._lines:
+            return None
+
+        return self._lines
 
     def _reset_state(self) -> None:
         self._drawing = False
