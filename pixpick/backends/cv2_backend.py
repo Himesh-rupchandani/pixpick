@@ -168,7 +168,7 @@ class CV2Backend(BaseBackend):
 
 
             if key == 13:
-                if len(self._line_points) != 2:
+                if not self._lines or self._line_points:
                     continue
 
                 cv2.destroyWindow(title)
